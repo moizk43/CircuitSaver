@@ -1,0 +1,29 @@
+model User {
+  id            String   @id @default(uuid())
+  email         String   @unique
+  utilityId     String?
+  createdAt     DateTime @default(now())
+}
+
+model LedgerEntry {
+  id            String   @id @default(uuid())
+  userId        String
+  kwhTraded     Float
+  creditsEarned Float
+  eventTimestamp DateTime
+}
+
+model Baseline {
+  id            String   @id @default(uuid())
+  userId        String
+  predictedKwh  Float
+  actualKwh     Float
+  timestamp     DateTime
+}
+
+model GridSignal {
+  id            String   @id @default(uuid())
+  carbonIntensity Float
+  temperature   Float
+  fetchedAt     DateTime @default(now())
+}
