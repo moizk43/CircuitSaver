@@ -4,6 +4,11 @@ api/data/raw/london_daily_consumption.csv
 *.py[codz]
 *$py.class
 
+#Ignore large data files
+data/processed/
+app/services/baseline_predictor/saved_models/
+
+
 # C extensions
 *.so
 
