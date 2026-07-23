@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>CircuitSaver WebSocket Test</title>
+</head>
+<body>
+    <h2>Live Swarm Events</h2>
+    <pre id="log" style="background:#111;color:#0f0;padding:10px;height:500px;overflow-y:scroll;"></pre>
+
+    <script>
+        const log = document.getElementById("log");
+        const ws = new WebSocket("ws://127.0.0.1:8000/ws/dashboard");
+
+        ws.onopen = () => {
+            log.textContent += "Connected to CircuitSaver live feed.\n\n";
+        };
+
+        ws.onmessage = (event) => {
+            const data = JSON.parse(event.data);
+            log.textContent += JSON.stringify(data, null, 2) + "\n\n";
+            log.scrollTop = log.scrollHeight;
+        };
+
+        ws.onclose = () => {
+            log.textContent += "Disconnected from live feed.\n";
+        };
+
+        ws.onerror = (error) => {
+            log.textContent += "WebSocket error: " + error + "\n";
+        };
+    </script>
+</body>
+</html>

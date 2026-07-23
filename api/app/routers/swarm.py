@@ -11,6 +11,9 @@ from fastapi import Depends
 from app.core.database import get_db
 from app.db.models import ShedLedgerEntry, GridSignalLog
 
+#Web Socket Thing
+from app.websocket.connection_manager import manager
+
 
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel, Field
@@ -83,7 +86,7 @@ class RestartPlanResponse(BaseModel):
     schedule: List[RestartPlanEntry]
 
 @router.post("/shed-event", response_model=ShedEventResponse)
-def trigger_shed_event(request: ShedEventRequest, db: Session = Depends(get_db)):
+async def trigger_shed_event(request: ShedEventRequest, db: Session = Depends(get_db)):
     try:
         summary, result_df = allocate_capacity(
             transformer_id=request.transformer_id,
@@ -126,13 +129,20 @@ def trigger_shed_event(request: ShedEventRequest, db: Session = Depends(get_db))
 
     db.commit()
 
+    broadcast_payload = {
+        "event_type": "shed_event",
+        **summary,
+        "allocations": allocations,
+    }
+    await manager.broadcast(broadcast_payload)
+
     return ShedEventResponse(
         **summary,
         allocations=allocations,
     )
 
 @router.post("/restart-plan", response_model=RestartPlanResponse)
-def trigger_restart_plan(request: RestartPlanRequest):
+async def trigger_restart_plan(request: RestartPlanRequest):
     if not request.households:
         raise HTTPException(status_code=400, detail="No households provided for restart planning.")
 
@@ -161,6 +171,13 @@ def trigger_restart_plan(request: RestartPlanRequest):
         ))
 
     schedule = sorted(schedule, key=lambda x: x.recommended_delay_minutes)
+
+    broadcast_payload = {
+        "event_type": "restart_plan",
+        "schedule": [entry.dict() for entry in schedule],
+    }
+    await manager.broadcast(broadcast_payload)
+
     return RestartPlanResponse(schedule=schedule)
 
 
