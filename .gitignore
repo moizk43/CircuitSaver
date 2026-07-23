@@ -1,6 +1,7 @@
 # Byte-compiled / optimized / DLL files
 __pycache__/
 api/data/raw/london_daily_consumption.csv
+data/processed/master_dataset.csv
 *.py[codz]
 *$py.class
 
