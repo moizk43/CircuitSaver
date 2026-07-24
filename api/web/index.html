@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Verdant — Smarter Clean Energy</title>
+<meta name="description" content="Verdant empowers homeowners to harness clean energy intelligently. Reduce your emissions, lower your bills, and join a smarter grid.">
+<link href="https://fonts.googleapis.com/css2?family=Baloo+Tammudu+2:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<nav class="navbar">
+  <div class="container navbar-inner">
+    <a href="index.html" class="logo">
+      <span class="logo-icon">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"/>
+          <path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/>
+        </svg>
+      </span>
+      <span class="logo-text">Verdant</span>
+    </a>
+    <div class="nav-links">
+      <a href="sign-in.html" class="btn btn-ghost btn-sm">Sign In</a>
+      <a href="get-started.html" class="btn btn-primary btn-sm">Get Started</a>
+    </div>
+    <button class="mobile-toggle" aria-label="Toggle menu">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+    </button>
+  </div>
+  <div class="mobile-menu">
+    <a href="sign-in.html" class="btn btn-ghost btn-sm btn-full">Sign In</a>
+    <a href="get-started.html" class="btn btn-primary btn-sm btn-full">Get Started</a>
+  </div>
+</nav>
+
+<section class="hero bg-mesh">
+  <div class="hero-grid">
+    <div class="hero-text">
+      <span class="hero-badge"><span class="pulse-dot"></span>The Future of Home Energy</span>
+      <h1 class="hero-title">Clean energy,<br><span class="text-gradient">intelligently</span> delivered.</h1>
+      <p class="hero-sub">Verdant makes clean, sustainable energy accessible to every home — reducing costs, cutting emissions, and building a smarter grid for everyone.</p>
+      <div class="hero-cta">
+        <a href="get-started.html" class="btn btn-primary btn-lg">Get Started <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></a>
+        <a href="sign-in.html" class="btn btn-secondary btn-lg">Sign In</a>
+      </div>
+      <p class="hero-trust">No credit card required. Join thousands of smart homes.</p>
+    </div>
+    <div style="display:flex;justify-content:center;">
+      <div style="position:relative;display:flex;align-items:center;justify-content:center;">
+        <div style="position:absolute;inset:0;border-radius:50%;background:rgba(220,252,231,.3);filter:blur(60px);transform:scale(1.25);"></div>
+        <canvas id="globe-canvas" style="position:relative;z-index:10;width:340px;height:340px;"></canvas>
+      </div>
+    </div>
+  </div>
+  <button class="scroll-hint" aria-label="Scroll down">
+    <span style="font-size:12px;">Scroll</span>
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+  </button>
+</section>
+
+<section class="mission" id="mission">
+  <div class="container">
+    <div class="mission-header">
+      <span class="section-badge">Our Mission</span>
+      <h2 class="section-title">Built on four core pillars</h2>
+      <p class="section-sub">Every decision we make is guided by a commitment to accessible, intelligent, and sustainable energy for all.</p>
+    </div>
+    <div class="pillar-grid">
+      <div class="card">
+        <div class="pillar-icon" style="background:var(--brand-100);color:var(--brand-600);">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2 3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+        </div>
+        <h3 class="pillar-title">Smart Efficiency</h3>
+        <p class="pillar-desc">AI-driven load management shifts your energy use to the cleanest, cheapest hours automatically.</p>
+      </div>
+      <div class="card">
+        <div class="pillar-icon" style="background:var(--sky-50);color:var(--sky-500);">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 12h4l3-9 4 18 3-9h6"/></svg>
+        </div>
+        <h3 class="pillar-title">Grid Stability</h3>
+        <p class="pillar-desc">Coordinated household participation keeps local transformers stable during peak demand.</p>
+      </div>
+      <div class="card">
+        <div class="pillar-icon" style="background:var(--amber-50);color:var(--amber-500);">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/></svg>
+        </div>
+        <h3 class="pillar-title">Lower Bills</h3>
+        <p class="pillar-desc">Homeowners save real money every month by shifting usage away from expensive peak rates.</p>
+      </div>
+      <div class="card">
+        <div class="pillar-icon" style="background:var(--rose-50);color:#f43f5e;">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21l7.8-7.8 1-1a5.5 5.5 0 0 0 0-7.8z"/></svg>
+        </div>
+        <h3 class="pillar-title">Climate Impact</h3>
+        <p class="pillar-desc">Every shifted kilowatt-hour reduces real carbon emissions across your neighborhood grid.</p>
+      </div>
+    </div>
+    <div class="stats-band">
+      <div><div class="stat-value">50K+</div><div class="stat-label">Homes Connected</div></div>
+      <div><div class="stat-value">$2.4M</div><div class="stat-label">Saved by Users</div></div>
+      <div><div class="stat-value">18K MT</div><div class="stat-label">CO2 Prevented</div></div>
+      <div><div class="stat-value">99.9%</div><div class="stat-label">Grid Uptime</div></div>
+    </div>
+  </div>
+</section>
+
+<section class="impact bg-mesh">
+  <div class="container impact-inner">
+    <div class="impact-header">
+      <span class="section-badge">Impact Calculator</span>
+      <h2 class="section-title">See the impact at scale</h2>
+      <p class="section-sub">Drag the slider to see what happens as more homes join Verdant.</p>
+    </div>
+    <div style="text-align:center;margin-bottom:16px;">
+      <span id="impact-pct-heading" style="font-size:48px;font-weight:800;color:var(--brand-500);">10</span><span style="font-size:24px;font-weight:700;color:var(--gray-400);">% of homes</span>
+    </div>
+    <input type="range" id="impact-slider" min="0" max="100" value="10">
+    <div class="slider-endpoints"><span>0%</span><span>100% of homes</span></div>
+    <div class="impact-cards">
+      <div class="impact-card" style="background:var(--amber-50);">
+        <span class="value" id="card-homes-value">210M</span><span class="unit" id="card-homes-unit"></span>
+        <div class="label">Homes Participating</div>
+      </div>
+      <div class="impact-card" style="background:var(--brand-50);">
+        <span class="value" id="card-energy-value">2.2B</span><span class="unit" id="card-energy-unit">MWh/yr</span>
+        <div class="label">Energy Shifted</div>
+      </div>
+      <div class="impact-card" style="background:var(--sky-50);">
+        <span class="value" id="card-emissions-value">850K</span><span class="unit" id="card-emissions-unit">MT CO2</span>
+        <div class="label">Emissions Prevented</div>
+      </div>
+      <div class="impact-card" style="background:var(--rose-50);">
+        <span class="value" id="card-money-value">$326M</span><span class="unit" id="card-money-unit">/yr</span>
+        <div class="label">Money Saved</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer style="border-top:1px solid var(--gray-100);padding:40px 24px;background:#fff;">
+  <div class="container" style="display:flex;flex-direction:column;align-items:center;justify-content:space-between;gap:16px;font-size:14px;color:var(--gray-400);">
+    <div style="display:flex;align-items:center;gap:8px;font-weight:600;color:var(--gray-700);">
+      <span style="width:20px;height:20px;border-radius:8px;background:var(--brand-500);display:inline-block;"></span> Verdant
+    </div>
+    <p>&copy; <span id="year"></span> Verdant Energy, Inc. All rights reserved.</p>
+    <p style="color:var(--brand-500);font-weight:500;">Built for a greener planet.</p>
+  </div>
+</footer>
+
+<script src="js/auth.js"></script>
+<script src="js/counter.js"></script>
+<script src="js/globe.js"></script>
+<script src="js/impact-slider.js"></script>
+<script src="js/main.js"></script>
+<script>document.getElementById("year").textContent = new Date().getFullYear();</script>
+</body>
+</html>
