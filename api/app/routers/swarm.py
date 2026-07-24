@@ -14,6 +14,12 @@ from app.db.models import ShedLedgerEntry, GridSignalLog
 #Web Socket Thing
 from app.websocket.connection_manager import manager
 
+#Email Sender
+from app.services.notifications.email_service import (
+    get_user_contact_info,
+    build_html_body,
+    send_email_notification,
+)
 
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel, Field
@@ -136,6 +142,25 @@ async def trigger_shed_event(request: ShedEventRequest, db: Session = Depends(ge
     }
     await manager.broadcast(broadcast_payload)
 
+    for row in allocations:
+        contact = get_user_contact_info(row["user_id"])
+        if contact and contact["notification_method"] == "email":
+            html = build_html_body(
+                appliance=row["recommended_appliance"],
+                delay_minutes=15,
+                cost_saved=row["estimated_cost_saved_usd"],
+                carbon_saved=row["estimated_carbon_saved_lbs"],
+            )
+            subject_line = f"CircuitSaver: A Way to Save ${row['estimated_cost_saved_usd']:.2f} on Your Next Bill"
+            try:
+                send_email_notification(
+                    to_address=contact["email_address"],
+                    subject=subject_line,
+                    html_body=html,
+                )
+            except Exception as e:
+                print(f"Failed to send email to {row['user_id']}: {e}")
+
     return ShedEventResponse(
         **summary,
         allocations=allocations,
@@ -177,6 +202,24 @@ async def trigger_restart_plan(request: RestartPlanRequest):
         "schedule": [entry.dict() for entry in schedule],
     }
     await manager.broadcast(broadcast_payload)
+
+    for entry in schedule:
+        contact = get_user_contact_info(entry.user_id)
+        if contact and contact["notification_method"] == "email":
+            html = build_html_body(
+                appliance=entry.appliance,
+                delay_minutes=entry.recommended_delay_minutes,
+                cost_saved=0.0,
+                carbon_saved=0.0,
+            )
+            try:
+                send_email_notification(
+                    to_address=contact["email_address"],
+                    subject="CircuitSaver: Smart Restart Recommendation",
+                    html_body=html,
+                )
+            except Exception as e:
+                print(f"Failed to send email to {entry.user_id}: {e}")
 
     return RestartPlanResponse(schedule=schedule)
 

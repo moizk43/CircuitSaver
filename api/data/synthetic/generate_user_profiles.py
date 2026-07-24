@@ -45,6 +45,17 @@ USAGE_WINDOWS = {
     "pool_pump": ("10:00", "16:00"),
 }
 
+# Notification settings: what % of households are email-only (no smart device/app)
+NOTIFICATION_METHODS = ["app", "email"]
+NOTIFICATION_WEIGHTS = [0.70, 0.30]
+
+# Manually override specific user_ids with real email addresses for live testing.
+# Add your own real email here so you can actually receive a test message.
+REAL_TEST_EMAILS = {
+    "user_003": "moizkothawala@gmail.com",
+    "user_007": "moizkothawala@gmail.com",
+}
+
 
 def sample_appliance_ownership(household_type):
     bias = HOUSEHOLD_PROFILE_BIAS[household_type]
@@ -80,6 +91,10 @@ def sample_priority_weights():
     return round(carbon / total, 2), round(cost / total, 2)
 
 
+def sample_notification_method():
+    return np.random.choice(NOTIFICATION_METHODS, p=NOTIFICATION_WEIGHTS)
+
+
 def generate_profile(user_id):
     household_type = np.random.choice(list(HOUSEHOLD_PROFILE_BIAS.keys()), p=[0.28, 0.24, 0.18, 0.15, 0.15])
     region = np.random.choice(REGIONS, p=[0.6, 0.4])
@@ -102,6 +117,13 @@ def generate_profile(user_id):
 
     avg_monthly_kwh = round(sum(appliance_kwh.values()) * np.random.uniform(20, 30) + home_sqft * 0.04, 1)
 
+    notification_method = sample_notification_method()
+    if user_id in REAL_TEST_EMAILS:
+        notification_method = "email"
+        email_address = REAL_TEST_EMAILS[user_id]
+    else:
+        email_address = f"{user_id.lower()}@example.com"
+
     return {
         "user_id": user_id,
         "household_type": household_type,
@@ -118,6 +140,8 @@ def generate_profile(user_id):
         "carbon_priority_weight": carbon_weight,
         "cost_priority_weight": cost_weight,
         "avg_monthly_kwh": avg_monthly_kwh,
+        "notification_method": notification_method,
+        "email_address": email_address,
     }
 
 
@@ -130,4 +154,5 @@ if __name__ == "__main__":
     os.makedirs("data/synthetic", exist_ok=True)
     df.to_csv("data/synthetic/user_profiles.csv", index=False)
     print(f"Generated {len(df)} synthetic user profiles.")
+    print(f"Email-notify households: {(df['notification_method'] == 'email').sum()} / {len(df)}")
     print(df.head())
