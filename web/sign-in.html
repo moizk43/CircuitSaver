@@ -82,25 +82,38 @@ function showFieldError(id, message) {
 form.addEventListener("submit", async (e) => {
   e.preventDefault();
   clearErrors();
+
   let hasError = false;
-  if (!usernameInput.value.trim()) { showFieldError("Email", "Email is required."); hasError = true; }
-  if (!passwordInput.value) { showFieldError("password", "Password is required."); hasError = true; }
+  const email = usernameInput.value.trim();
+  const password = passwordInput.value;
+
+  if (!email) {
+    showFieldError("username", "Email is required.");
+    hasError = true;
+  }
+
+  if (!password) {
+    showFieldError("password", "Password is required.");
+    hasError = true;
+  }
+
   if (hasError) return;
 
   submitBtn.disabled = true;
   submitText.textContent = "Signing in...";
-  await new Promise((r) => setTimeout(r, 600));
 
-try {
-  const result = await signInUser(usernameInput.value.trim(), passwordInput.value);
-  setSession(result.email, result.access_token);
-  window.location.href = "dashboard.html";
-} catch (err) {
-  submitBtn.disabled = false;
-  submitText.textContent = "Sign In";
-  generalError.style.display = "flex";
-  document.getElementById("general-error-text").textContent = err.message;
-}
+  try {
+    const result = await signInUser(email, password);
+    setSession(result.email, result.access_token);
+    window.location.href = "dashboard.html";
+  } catch (err) {
+    submitBtn.disabled = false;
+    submitText.textContent = "Sign In";
+    generalError.style.display = "flex";
+    document.getElementById("general-error-text").textContent =
+      err.message || "Incorrect email or password.";
+  }
+});
 
 document.querySelectorAll(".toggle-pw").forEach((btn) => {
   btn.addEventListener("click", () => {
