@@ -30,7 +30,7 @@
         <div class="form-group">
           <div class="field">
             <label for="username">Username</label>
-            <input id="username" type="text" placeholder="Your username" autocomplete="username" autofocus>
+            <input id="username" type="text" placeholder="Your Email" autocomplete="username" autofocus>
             <span class="error-msg" id="username-error" style="display:none;"></span>
           </div>
           <div class="field">
@@ -83,7 +83,7 @@ form.addEventListener("submit", async (e) => {
   e.preventDefault();
   clearErrors();
   let hasError = false;
-  if (!usernameInput.value.trim()) { showFieldError("username", "Username is required."); hasError = true; }
+  if (!usernameInput.value.trim()) { showFieldError("Email", "Email is required."); hasError = true; }
   if (!passwordInput.value) { showFieldError("password", "Password is required."); hasError = true; }
   if (hasError) return;
 
@@ -91,17 +91,16 @@ form.addEventListener("submit", async (e) => {
   submitText.textContent = "Signing in...";
   await new Promise((r) => setTimeout(r, 600));
 
-  const valid = validateUser(usernameInput.value.trim(), passwordInput.value);
-  if (valid) {
-    setSession(usernameInput.value.trim());
-    window.location.href = "dashboard.html";
-  } else {
-    submitBtn.disabled = false;
-    submitText.textContent = "Sign In";
-    generalError.style.display = "flex";
-    document.getElementById("general-error-text").textContent = "Incorrect username or password. Please try again.";
-  }
-});
+try {
+  const result = await signInUser(usernameInput.value.trim(), passwordInput.value);
+  setSession(result.email, result.access_token);
+  window.location.href = "dashboard.html";
+} catch (err) {
+  submitBtn.disabled = false;
+  submitText.textContent = "Sign In";
+  generalError.style.display = "flex";
+  document.getElementById("general-error-text").textContent = err.message;
+}
 
 document.querySelectorAll(".toggle-pw").forEach((btn) => {
   btn.addEventListener("click", () => {

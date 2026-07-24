@@ -91,7 +91,7 @@ form.addEventListener("submit", async (e) => {
 
   if (!username) { showFieldError("username", "Username is required."); hasError = true; }
   else if (username.length < 3) { showFieldError("username", "Username must be at least 3 characters."); hasError = true; }
-  else if (userExists(username)) { showFieldError("username", "That username is already taken."); hasError = true; }
+
 
   if (!password) { showFieldError("password", "Password is required."); hasError = true; }
   else if (password.length < 8) { showFieldError("password", "Password must be at least 8 characters."); hasError = true; }
@@ -105,13 +105,20 @@ form.addEventListener("submit", async (e) => {
   submitText.textContent = "Creating account...";
   await new Promise((r) => setTimeout(r, 700));
 
-  createUser(username, password);
-  setSession(username);
+try {
+  const result = await signUpUser(username, password);
+  setSession(result.email, null);
 
   document.getElementById("form-view").style.display = "none";
   document.getElementById("success-view").style.display = "flex";
 
   setTimeout(() => { window.location.href = "dashboard.html"; }, 1200);
+} catch (err) {
+  submitBtn.disabled = false;
+  submitText.textContent = "Create Account";
+  showFieldError("username", err.message);
+}
+
 });
 </script>
 </body>
