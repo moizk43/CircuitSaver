@@ -257,7 +257,13 @@ document.getElementById("email-plan-btn").addEventListener("click", async () => 
   const totalCo2 = selected.reduce((sum, a) => sum + (a.kwh * a.co2PerKwh), 0);
   const totalCost = selected.reduce((sum, a) => sum + (a.kwh * a.costPerKwh), 0);
   const firstAppliance = selected[0];
-  const { email: userEmail } = getSession();
+  const session = getSession();
+  const userEmail = session.email;
+
+  if (!userEmail) {
+    alert("No signed-in email found. Please sign in again.");
+    return;
+  }
 
   const btn = document.getElementById("email-plan-btn");
   const originalText = btn.textContent;
@@ -271,7 +277,7 @@ document.getElementById("email-plan-btn").addEventListener("click", async () => 
         email: userEmail,
         appliances: selected.map((a, index) => ({
           order: index + 1,
-          id: a.id,
+          id: a.id.replace(/-/g, "_"),
           label: a.label,
           kwh: a.kwh,
           estimated_carbon_saved_lbs: Number((a.kwh * a.co2PerKwh).toFixed(2)),
@@ -291,7 +297,7 @@ document.getElementById("email-plan-btn").addEventListener("click", async () => 
         email: userEmail,
         appliance: {
           order: 1,
-          id: firstAppliance.id,
+          id: firstAppliance.id.replace(/-/g, "_"),
           label: firstAppliance.label,
           kwh: firstAppliance.kwh,
           estimated_carbon_saved_lbs: Number((firstAppliance.kwh * firstAppliance.co2PerKwh).toFixed(2)),
@@ -300,9 +306,9 @@ document.getElementById("email-plan-btn").addEventListener("click", async () => 
       })
     });
 
-    alert(`Emails sent to ${userEmail}: one summary email and one appliance-specific email for ${firstAppliance.label}.`);
+    alert(`Sent 2 emails to ${userEmail}: a full summary and a recommendation for ${firstAppliance.label}.`);
   } catch (err) {
-    alert(err.message || "Failed to send email plan.");
+    alert(err.message || "Failed to send emails.");
   } finally {
     btn.disabled = false;
     btn.textContent = originalText;
