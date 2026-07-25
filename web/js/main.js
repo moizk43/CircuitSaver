@@ -30,3 +30,26 @@ document.addEventListener("DOMContentLoaded", () => {
   if (typeof initCounters === "function") initCounters();
   if (typeof initImpactSlider === "function") initImpactSlider();
 });
+
+let connectedStat = document.querySelector(".stat-value-connected");
+let savedStat = document.querySelector(".stat-value-saved");
+let co2Stat = document.querySelector(".stat-value-co2");
+let uptimeStat = document.querySelector(".stat-value-uptime");
+
+connectedStat.textContent = "0";
+savedStat.textContent = "0";
+co2Stat.textContent = "0";
+uptimeStat.textContent = "99.9%";
+
+numUsers = 
+
+
+function updateStats() {
+    connectedStat = 
+
+    // Loops the function safely on the next screen refresh
+    requestAnimationFrame(updatePhysics); 
+}
+
+// Start the loop
+requestAnimationFrame(updatePhysics);
