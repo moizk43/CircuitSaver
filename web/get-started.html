@@ -12,7 +12,7 @@
   <div class="auth-box">
     <a href="index.html" class="auth-logo">
       <span class="logo-icon" style="width:36px;height:36px;border-radius:12px;background:var(--brand-500);display:flex;align-items:center;justify-content:center;">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.2"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"/><path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/></svg>
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.2"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 517 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"/><path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/></svg>
       </span>
       <span class="logo-text">Circuit Saver</span>
     </a>
@@ -51,8 +51,8 @@
       </div>
 
       <div id="success-view" class="success-box" style="display:none;">
-        <svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="var(--brand-500)" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
-        <h2 style="font-size:24px;font-weight:700;">Welcome to Circuit Saver!</h2>
+        <svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="var(--brand-500)" stroke-width="2"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+        <h2 style="font-size:24px;font-weight:700;">Welcome to Verdant!</h2>
         <p style="color:var(--gray-500);">Your account has been created. Redirecting you now&hellip;</p>
       </div>
     </div>
@@ -84,41 +84,74 @@ function showFieldError(id, message) {
 form.addEventListener("submit", async (e) => {
   e.preventDefault();
   clearErrors();
+
   let hasError = false;
-  const username = usernameInput.value.trim();
+  const email = usernameInput.value.trim();
   const password = passwordInput.value;
   const confirm = confirmInput.value;
 
-  if (!username) { showFieldError("username", "Username is required."); hasError = true; }
-  else if (username.length < 3) { showFieldError("username", "Username must be at least 3 characters."); hasError = true; }
+  if (!email) {
+    showFieldError("username", "Email is required.");
+    hasError = true;
+  } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    showFieldError("username", "Enter a valid email address.");
+    hasError = true;
+  }
 
+  if (!password) {
+    showFieldError("password", "Password is required.");
+    hasError = true;
+  } else if (password.length < 8) {
+    showFieldError("password", "Password must be at least 8 characters.");
+    hasError = true;
+  }
 
-  if (!password) { showFieldError("password", "Password is required."); hasError = true; }
-  else if (password.length < 8) { showFieldError("password", "Password must be at least 8 characters."); hasError = true; }
-
-  if (!confirm) { showFieldError("confirm", "Please confirm your password."); hasError = true; }
-  else if (password !== confirm) { showFieldError("confirm", "Passwords do not match."); hasError = true; }
+  if (!confirm) {
+    showFieldError("confirm", "Please confirm your password.");
+    hasError = true;
+  } else if (password !== confirm) {
+    showFieldError("confirm", "Passwords do not match.");
+    hasError = true;
+  }
 
   if (hasError) return;
 
   submitBtn.disabled = true;
   submitText.textContent = "Creating account...";
-  await new Promise((r) => setTimeout(r, 700));
+  await new Promise((r) => setTimeout(r, 400));
 
-try {
-  const result = await signUpUser(username, password);
-  setSession(result.email, null);
+  try {
+    const result = await signUpUser(email, password);
 
-  document.getElementById("form-view").style.display = "none";
-  document.getElementById("success-view").style.display = "flex";
+    if (result.needs_confirmation) {
+      window.location.href = "sign-in.html?confirm=1&email=" + encodeURIComponent(result.email);
+      return;
+    }
 
-  setTimeout(() => { window.location.href = "dashboard.html"; }, 1200);
-} catch (err) {
-  submitBtn.disabled = false;
-  submitText.textContent = "Create Account";
-  showFieldError("username", err.message);
-}
+    setSession(result.email, result.access_token);
 
+    document.getElementById("form-view").style.display = "none";
+    document.getElementById("success-view").style.display = "flex";
+
+    setTimeout(() => {
+      if (isAdminEmail(result.email)) {
+        window.location.href = "admin.html";
+      } else {
+        window.location.href = "dashboard.html";
+      }
+    }, 1200);
+  } catch (err) {
+    submitBtn.disabled = false;
+    submitText.textContent = "Create Account";
+
+    if (err.message && err.message.toLowerCase().includes("already exists")) {
+      showFieldError("username", "An account with this email already exists. Try signing in instead.");
+    } else if (err.message && err.message.toLowerCase().includes("already registered")) {
+      showFieldError("username", "An account with this email already exists. Try signing in instead.");
+    } else {
+      showFieldError("username", err.message || "Signup failed. Please try again.");
+    }
+  }
 });
 </script>
 </body>

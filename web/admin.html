@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin — Verdant</title>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+Tammudu+2:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    
+<header style="display:flex;align-items:center;justify-content:space-between;padding:20px 32px;border-bottom:1px solid var(--gray-200);">
+  <a href="admin.html" class="auth-logo" style="display:flex;align-items:center;gap:10px;">
+    <span class="logo-icon" style="width:36px;height:36px;border-radius:12px;background:var(--brand-500);display:flex;align-items:center;justify-content:center;">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.2"><path d="M11 20A7 7 0 0 1 9.8 6.1"/><path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/></svg>
+    </span>
+    <span class="logo-text">Verdant Admin</span>
+  </a>
+  <div style="display:flex;align-items:center;gap:16px;font-size:14px;" id="admin-nav-slot">
+    <a href="#" id="sign-out-link">Sign out</a>
+  </div>
+</header>
+
+<main style="max-width:1100px;margin:0 auto;padding:32px 24px 80px;">
+
+<main style="max-width:1100px;margin:0 auto;padding:32px 24px 80px;">
+  <h1 style="font-size:28px;font-weight:700;">Grid Control</h1>
+  <p style="color:var(--gray-500);margin-top:4px;">Transformer-level monitoring and shed event controls.</p>
+
+  <div class="stat-card" style="margin-top:32px;">
+    <p class="stat-card-title">Trigger Shed Event</p>
+    <form id="shed-event-form" style="display:flex;flex-direction:column;gap:12px;margin-top:12px;max-width:400px;">
+      <div class="field">
+        <label for="shed-transformer">Transformer</label>
+        <select id="shed-transformer" required></select>
+      </div>
+      <div class="field">
+        <label for="shed-target-kw">Shed Target (kW)</label>
+        <input id="shed-target-kw" type="number" step="0.1" min="0" value="5" required>
+      </div>
+      <div class="field">
+        <label for="shed-co2">CO₂ (lbs/kWh)</label>
+        <input id="shed-co2" type="number" step="0.01" min="0" value="0.85" required>
+      </div>
+      <div class="field">
+        <label for="shed-rate">Peak Rate ($/kWh)</label>
+        <input id="shed-rate" type="number" step="0.01" min="0" value="0.15" required>
+      </div>
+      <button type="submit" class="btn btn-primary" id="shed-submit-btn">Trigger Shed Event</button>
+    </form>
+    <div id="shed-result" style="margin-top:16px;display:none;"></div>
+  </div>
+
+  <div class="stat-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-top:32px;">
+    <div class="stat-card">
+      <p class="stat-card-title">Transformers</p>
+      <div id="transformers-list" style="margin-top:12px;display:flex;flex-direction:column;gap:8px;max-height:500px;overflow-y:auto;"></div>
+    </div>
+    <div class="stat-card">
+      <p class="stat-card-title">Ledger</p>
+      <div id="ledger-list" style="margin-top:12px;display:flex;flex-direction:column;gap:8px;max-height:500px;overflow-y:auto;"></div>
+    </div>
+  </div>
+</main>
+
+
+<script src="js/auth.js"></script>
+<script>
+(async function () {
+  const session = await verifySession();
+  if (!session) {
+    window.location.href = "sign-in.html";
+    return;
+  }
+  if (!isAdminEmail(session)) {
+    window.location.href = "dashboard.html";
+    return;
+  }
+
+document.getElementById("sign-out-link").addEventListener("click", (e) => {
+  e.preventDefault();
+  clearSession();
+  window.location.href = "sign-in.html";
+});
+
+function statusColor(status) {
+  if (status === "high_load") return "var(--amber-500, orange)";
+  if (status === "critical") return "var(--error, #d63031)";
+  return "var(--brand-500)";
+}
+
+function renderTransformers(data) {
+  const container = document.getElementById("transformers-list");
+  if (!container) return;
+  if (!data.length) {
+    container.innerHTML = `<p style="color:var(--gray-400);font-size:14px;">No transformer data yet.</p>`;
+    return;
+  }
+  container.innerHTML = data.map(t => `
+    <div class="transformer-card" style="padding:12px;border:1px solid var(--gray-200);border-radius:10px;">
+      <div style="display:flex;justify-content:space-between;align-items:center;">
+        <strong style="font-size:14px;">${t.transformer_id}</strong>
+        <span style="font-size:12px;font-weight:600;color:${statusColor(t.status)};text-transform:uppercase;">${t.status.replace("_", " ")}</span>
+      </div>
+      <p style="font-size:13px;color:var(--gray-500);margin-top:4px;">${t.region} · ${t.connected_household_count} homes</p>
+      <div style="display:flex;justify-content:space-between;margin-top:8px;font-size:13px;">
+        <span>Load: <strong>${t.loading_percent}%</strong></span>
+        <span>Peak: <strong>${t.coincident_peak_kw} kW</strong></span>
+      </div>
+    </div>
+  `).join("");
+}
+
+function renderLedger(data) {
+  const container = document.getElementById("ledger-list");
+  if (!container) return;
+  if (!data.length) {
+    container.innerHTML = `<p style="color:var(--gray-400);font-size:14px;">No ledger entries yet.</p>`;
+    return;
+  }
+  container.innerHTML = data.slice(0, 10).map(entry => `
+    <div class="ledger-row" style="padding:10px;border-bottom:1px solid var(--gray-100);font-size:13px;">
+      <div style="display:flex;justify-content:space-between;">
+        <strong>${entry.transformer_id}</strong>
+        <span style="color:var(--gray-400);font-size:12px;">${new Date(entry.created_at).toLocaleString()}</span>
+      </div>
+      <p style="color:var(--gray-500);margin-top:2px;">
+        ${entry.household_type.replace(/_/g, " ")} · ${entry.allocated_kw.toFixed(2)} kW ·
+        $${entry.estimated_cost_saved_usd.toFixed(2)} saved ·
+        ${entry.estimated_carbon_saved_lbs.toFixed(2)} lbs CO₂
+      </p>
+    </div>
+  `).join("");
+}
+
+function populateTransformerDropdown(transformers) {
+  const select = document.getElementById("shed-transformer");
+  if (!select) return;
+  select.innerHTML = transformers.map(t =>
+    `<option value="${t.transformer_id}">${t.transformer_id} (${t.region}, ${t.loading_percent}% load)</option>`
+  ).join("");
+}
+
+async function loadTransformers() {
+  const transformers = await authFetch("/swarm/transformers");
+  renderTransformers(transformers);
+  populateTransformerDropdown(transformers);
+}
+
+async function loadLedger() {
+  const ledger = await authFetch("/swarm/ledger");
+  renderLedger(ledger);
+}
+
+document.getElementById("shed-event-form").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const btn = document.getElementById("shed-submit-btn");
+  const resultBox = document.getElementById("shed-result");
+
+  const payload = {
+    transformer_id: document.getElementById("shed-transformer").value,
+    shed_target_kw: parseFloat(document.getElementById("shed-target-kw").value),
+    current_co2_lbs_per_kwh: parseFloat(document.getElementById("shed-co2").value),
+    peak_rate_usd_per_kwh: parseFloat(document.getElementById("shed-rate").value)
+  };
+
+  btn.disabled = true;
+  btn.textContent = "Running...";
+  resultBox.style.display = "none";
+
+  try {
+    const result = await authFetch("/swarm/shed-event", {
+      method: "POST",
+      body: JSON.stringify(payload)
+    });
+
+    resultBox.style.display = "block";
+    resultBox.innerHTML = `
+      <div style="padding:12px;border:1px solid var(--brand-200);border-radius:10px;background:var(--brand-50);">
+        <p style="font-weight:600;margin-bottom:8px;">Shed event complete for ${result.transformer_id}</p>
+        <p style="font-size:13px;color:var(--gray-600);">
+          Allocated: ${result.total_allocated_kw.toFixed(2)} kW /
+          Target: ${payload.shed_target_kw} kW
+          (${result.shortfall_kw > 0 ? `shortfall: ${result.shortfall_kw.toFixed(2)} kW` : "target met"})
+        </p>
+        <p style="font-size:13px;color:var(--gray-600);">
+          Households involved: ${result.households_involved} ·
+          $${result.total_cost_saved_usd.toFixed(2)} saved ·
+          ${result.total_carbon_saved_lbs.toFixed(2)} lbs CO₂ saved
+        </p>
+      </div>
+    `;
+
+    loadLedger();
+    loadTransformers();
+  } catch (err) {
+    resultBox.style.display = "block";
+    resultBox.innerHTML = `<p style="color:var(--error);font-size:13px;">${err.message}</p>`;
+  } finally {
+    btn.disabled = false;
+    btn.textContent = "Trigger Shed Event";
+  }
+});
+
+loadTransformers();
+loadLedger();
+setInterval(() => {
+  loadTransformers();
+  loadLedger();
+}, 15000);
+
+})();
+</script>
+</body>
+</html>

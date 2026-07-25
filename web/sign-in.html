@@ -12,7 +12,10 @@
   <div class="auth-box">
     <a href="index.html" class="auth-logo">
       <span class="logo-icon" style="width:36px;height:36px;border-radius:12px;background:var(--brand-500);display:flex;align-items:center;justify-content:center;">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.2"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"/><path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/></svg>
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+  <path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"/>
+  <path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/>
+</svg>
       </span>
       <span class="logo-text">Circuit Saver</span>
     </a>
@@ -29,8 +32,8 @@
       <form id="sign-in-form" novalidate>
         <div class="form-group">
           <div class="field">
-            <label for="username">Username</label>
-            <input id="username" type="text" placeholder="Your Email" autocomplete="username" autofocus>
+            <label for="username">Email</label>
+            <input id="username" type="email" placeholder="you@example.com" autocomplete="email" autofocus>
             <span class="error-msg" id="username-error" style="display:none;"></span>
           </div>
           <div class="field">
@@ -55,7 +58,28 @@
   </div>
 </div>
 
+<script src="js/config.js"></script>
 <script src="js/auth.js"></script>
+<script>
+(function () {
+  const params = new URLSearchParams(window.location.search);
+  if (params.get("confirm") === "1") {
+    const email = params.get("email") || "your email";
+    const generalError = document.getElementById("general-error");
+    const generalErrorText = document.getElementById("general-error-text");
+    generalError.style.display = "flex";
+    generalError.style.background = "var(--brand-50, #ecfdf5)";
+    generalError.style.borderColor = "var(--brand-200, #a7f3d0)";
+    generalError.style.color = "var(--brand-700, #047857)";
+    generalErrorText.textContent =
+      `We've sent a confirmation link to ${email}. Please check your inbox and confirm your account before signing in.`;
+
+    const usernameInput = document.getElementById("username");
+    if (usernameInput) usernameInput.value = email;
+  }
+})();
+</script>
+
 <script>
 const form = document.getElementById("sign-in-form");
 const usernameInput = document.getElementById("username");
@@ -91,12 +115,10 @@ form.addEventListener("submit", async (e) => {
     showFieldError("username", "Email is required.");
     hasError = true;
   }
-
   if (!password) {
     showFieldError("password", "Password is required.");
     hasError = true;
   }
-
   if (hasError) return;
 
   submitBtn.disabled = true;
@@ -105,13 +127,18 @@ form.addEventListener("submit", async (e) => {
   try {
     const result = await signInUser(email, password);
     setSession(result.email, result.access_token);
-    window.location.href = "dashboard.html";
+
+    if (isAdminEmail(result.email)) {
+      window.location.href = "admin.html";
+    } else {
+      window.location.href = "dashboard.html";
+    }
   } catch (err) {
     submitBtn.disabled = false;
     submitText.textContent = "Sign In";
     generalError.style.display = "flex";
     document.getElementById("general-error-text").textContent =
-      err.message || "Incorrect email or password.";
+      err.message || "Sign in failed. Please try again.";
   }
 });
 

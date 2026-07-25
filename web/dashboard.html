@@ -7,7 +7,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Baloo+Tammudu+2:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/style.css">
 </head>
-<body class="bg-mesh">
+<body>
 
 <header class="dash-header">
   <div class="dash-header-inner">
@@ -42,116 +42,192 @@
     <p style="color:var(--brand-500);font-weight:600;font-size:14px;margin-top:4px;">Clean energy, intelligently delivered.</p>
   </div>
 
-  <div class="stat-grid">
-    <div class="stat-card">
-      <div class="stat-card-top">
-        <div>
-          <p class="stat-card-title">Money Saved</p>
-          <p class="stat-card-subtitle">Total savings this year</p>
-        </div>
-        <div class="stat-icon" style="background:var(--gray-50);color:var(--emerald-500);">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
-        </div>
-      </div>
-      <div class="stat-card-value" style="color:var(--emerald-500);"><span data-counter="14328" data-prefix="$" data-duration="2200">$0</span></div>
-      <p class="stat-card-desc">Compared to average grid pricing in your region.</p>
+    <div id="appliance-checklist" style="display:flex;flex-direction:column;gap:8px;margin-top:16px;"></div>
+
+    <div id="manual-shed-summary" style="margin-top:16px;padding:12px;border-radius:10px;background:var(--brand-50);display:none;">
+      <p style="font-size:14px;font-weight:600;">Estimated impact</p>
+      <p style="font-size:13px;color:var(--gray-600);margin-top:4px;">
+        <span id="manual-co2">0</span> lbs CO₂ saved ·
+        $<span id="manual-cost">0.00</span> saved ·
+        <span id="manual-kwh">0.00</span> kWh shed
+      </p>
     </div>
 
-    <div class="stat-card">
-      <div class="stat-card-top">
-        <div>
-          <p class="stat-card-title">Energy Comparison</p>
-          <p class="stat-card-subtitle">Equivalent impact, visualized</p>
-        </div>
-        <div class="stat-icon" style="background:var(--amber-50);color:var(--amber-500);">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
-        </div>
-      </div>
-      <p style="color:var(--gray-500);font-size:14px;margin-bottom:12px;">Enough energy to power</p>
-      <div style="display:flex;align-items:baseline;gap:8px;">
-        <span style="font-size:44px;font-weight:800;color:var(--amber-500);"><span data-counter="842" data-duration="2200">0</span></span>
-        <span style="font-size:20px;font-weight:700;color:var(--gray-700);">homes</span>
-      </div>
-      <p style="color:var(--gray-400);font-size:14px;margin-top:4px;">for an entire day</p>
-      <div class="mini-bars">
-        <div class="mini-bar" style="background:var(--amber-400);height:12px;"></div>
-        <div class="mini-bar" style="background:var(--amber-400);height:20px;"></div>
-        <div class="mini-bar" style="background:var(--amber-400);height:16px;"></div>
-        <div class="mini-bar" style="background:var(--amber-400);height:24px;"></div>
-        <div class="mini-bar" style="background:var(--amber-400);height:19px;"></div>
-        <div class="mini-bar" style="background:var(--amber-400);height:15px;"></div>
-        <div class="mini-bar" style="background:var(--amber-400);height:22px;"></div>
-        <div class="mini-bar" style="background:var(--amber-400);height:26px;"></div>
-        <div class="mini-bar" style="background:var(--amber-400);height:23px;"></div>
-        <div class="mini-bar" style="background:var(--amber-400);height:27px;"></div>
-        <div class="mini-bar" style="background:var(--gray-200);height:18px;"></div>
-        <div class="mini-bar" style="background:var(--gray-200);height:12px;"></div>
-      </div>
-    </div>
-
-    <div class="stat-card">
-      <div class="stat-card-top">
-        <div>
-          <p class="stat-card-title">Energy Saved</p>
-          <p class="stat-card-subtitle">Cumulative MWh delivered</p>
-        </div>
-        <div class="stat-icon" style="background:var(--gray-50);color:var(--brand-500);">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="6" width="18" height="12" rx="2"/><line x1="23" y1="13" x2="23" y2="11"/></svg>
-        </div>
-      </div>
-      <div class="stat-card-value" style="color:var(--brand-500);"><span data-counter="487" data-suffix=" MWh" data-duration="2200">0</span></div>
-      <p class="stat-card-desc">Clean energy fed back into the grid or stored locally.</p>
-    </div>
-
-    <div class="stat-card">
-      <div class="stat-card-top">
-        <div>
-          <p class="stat-card-title">Emissions Reduced</p>
-          <p class="stat-card-subtitle">CO&#8322; equivalent prevented</p>
-        </div>
-        <div class="stat-icon" style="background:var(--sky-50);color:var(--sky-500);">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9.6 4.6a2 2 0 1 1 1.4 3.4H2"/><path d="M12.6 19.4a2 2 0 1 0 1.4-3.4H2"/><path d="M17.6 8a2.5 2.5 0 1 1 1.4 4.6H2"/></svg>
-        </div>
-      </div>
-      <div style="display:flex;align-items:baseline;gap:8px;margin-bottom:4px;">
-        <span style="font-size:44px;font-weight:800;color:var(--sky-500);"><span data-counter="128" data-duration="2000">0</span></span>
-        <span style="font-size:18px;font-weight:700;color:var(--gray-700);">Metric Tons</span>
-      </div>
-      <p style="color:var(--gray-500);font-size:14px;font-weight:500;">CO&#8322; Prevented</p>
-      <p style="color:var(--gray-400);font-size:13px;margin-top:8px;">Equivalent to planting <span style="color:var(--sky-600);font-weight:600;"><span data-counter="5842" data-duration="2400">0</span> trees</span> this year.</p>
-      <div class="mini-bars">
-        <div class="mini-bar" style="background:var(--sky-500);height:9px;"></div>
-        <div class="mini-bar" style="background:var(--sky-500);height:15px;"></div>
-        <div class="mini-bar" style="background:var(--sky-500);height:13px;"></div>
-        <div class="mini-bar" style="background:var(--sky-500);height:20px;"></div>
-        <div class="mini-bar" style="background:var(--sky-500);height:22px;"></div>
-        <div class="mini-bar" style="background:var(--sky-500);height:19px;"></div>
-        <div class="mini-bar" style="background:var(--sky-500);height:27px;"></div>
-        <div class="mini-bar" style="background:var(--sky-500);height:30px;"></div>
-        <div class="mini-bar" style="background:var(--sky-500);height:26px;"></div>
-        <div class="mini-bar" style="background:var(--sky-500);height:31px;"></div>
-        <div class="mini-bar" style="background:var(--sky-500);height:29px;"></div>
-        <div class="mini-bar" style="background:var(--sky-500);height:40px;"></div>
-      </div>
-      <p style="font-size:12px;color:var(--gray-400);margin-top:4px;">Monthly CO&#8322; trend (MT)</p>
+    <div style="display:flex;gap:12px;margin-top:16px;flex-wrap:wrap;">
+      <button class="btn btn-secondary" id="connect-devices-btn">Connect Smart Devices</button>
+      <button class="btn btn-primary" id="email-plan-btn">Email Me This Plan</button>
     </div>
   </div>
 </main>
 
+<script src="js/config.js"></script>
 <script src="js/auth.js"></script>
-<script src="js/counter.js"></script>
 <script>
-const session = getSession();
-if (!session) {
-  window.location.href = "sign-in.html";
-} else {
-  document.getElementById("username-display").textContent = session.username;
-}
-document.getElementById("sign-out-btn").addEventListener("click", () => {
-  clearSession();
-  window.location.href = "index.html";
-});
-initCounters();
+
+(async function () {
+  const verifiedEmail = await verifySession();
+  if (!verifiedEmail) {
+    window.location.href = "sign-in.html";
+    return;
+  }
+
+  document.getElementById("welcome-text").textContent = `Welcome back, ${verifiedEmail}`;
+})();
+
+(async function () {
+  const verifiedEmail = await verifySession();
+  if (!verifiedEmail) {
+    window.location.href = "sign-in.html";
+    return;
+  }
+
+  document.getElementById("welcome-text").textContent = `Welcome back, ${verifiedEmail}`;
+
+  document.getElementById("sign-out-link").addEventListener("click", (e) => {
+    e.preventDefault();
+    clearSession();
+    window.location.href = "sign-in.html";
+  });
+
+  if (isAdminEmail(verifiedEmail)) {
+    document.getElementById("header-right").insertAdjacentHTML(
+      "afterbegin",
+      `<a href="admin.html" style="font-weight:600;">Admin Panel</a>`
+    );
+  }
+
+  const APPLIANCES = [
+    { id: "ac", label: "Air Conditioning", kwh: 2.5, co2PerKwh: 0.85, costPerKwh: 0.15 },
+    { id: "water-heater", label: "Water Heater", kwh: 1.8, co2PerKwh: 0.85, costPerKwh: 0.15 },
+    { id: "dryer", label: "Clothes Dryer", kwh: 3.0, co2PerKwh: 0.85, costPerKwh: 0.15 },
+    { id: "dishwasher", label: "Dishwasher", kwh: 1.2, co2PerKwh: 0.85, costPerKwh: 0.15 },
+    { id: "ev-charger", label: "EV Charger", kwh: 7.0, co2PerKwh: 0.85, costPerKwh: 0.15 },
+    { id: "pool-pump", label: "Pool Pump", kwh: 1.5, co2PerKwh: 0.85, costPerKwh: 0.15 }
+  ];
+
+  function formatCurrency(value) {
+    return new Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency: "USD",
+      maximumFractionDigits: 0
+    }).format(value);
+  }
+
+  function formatNumber(value, maximumFractionDigits = 0) {
+    return new Intl.NumberFormat("en-US", {
+      maximumFractionDigits
+    }).format(value);
+  }
+
+  function renderLedgerStats(ledger) {
+    const totalCostSaved = ledger.reduce(
+      (sum, entry) => sum + Number(entry.estimated_cost_saved_usd || 0),
+      0
+    );
+
+    const totalAllocatedKwh = ledger.reduce(
+      (sum, entry) => sum + Number(entry.allocated_kw || 0),
+      0
+    );
+
+    const totalCarbonSavedLbs = ledger.reduce(
+      (sum, entry) => sum + Number(entry.estimated_carbon_saved_lbs || 0),
+      0
+    );
+
+    const totalMwhShifted = totalAllocatedKwh / 1000;
+    const homesPoweredForDay = totalAllocatedKwh / 30;
+    const metricTonsSaved = totalCarbonSavedLbs / 2204.62;
+    const treesEquivalent = totalCarbonSavedLbs / 48;
+
+    document.getElementById("stat-money-saved").textContent =
+      formatCurrency(totalCostSaved);
+
+    document.getElementById("stat-homes-powered").innerHTML =
+      `${formatNumber(homesPoweredForDay)} <span style="font-size:16px;font-weight:500;">homes</span>`;
+
+    document.getElementById("stat-energy-saved").textContent =
+      totalMwhShifted >= 1
+        ? `${formatNumber(totalMwhShifted, 1)} MWh`
+        : `${formatNumber(totalAllocatedKwh, 0)} kWh`;
+
+    document.getElementById("stat-emissions-reduced").innerHTML =
+      metricTonsSaved >= 1
+        ? `${formatNumber(metricTonsSaved, 1)} <span style="font-size:16px;font-weight:500;">Metric Tons</span>`
+        : `${formatNumber(totalCarbonSavedLbs, 0)} <span style="font-size:16px;font-weight:500;">lbs</span>`;
+
+    document.getElementById("stat-trees-equivalent").textContent =
+      `Equivalent to planting ${formatNumber(treesEquivalent)} trees this year.`;
+  }
+
+  async function loadLedgerStats() {
+    try {
+      const ledger = await authFetch("/swarm/ledger");
+      renderLedgerStats(Array.isArray(ledger) ? ledger : []);
+    } catch (err) {
+      console.error("Failed to load ledger stats:", err);
+    }
+  }
+
+  function renderApplianceChecklist() {
+    const container = document.getElementById("appliance-checklist");
+    container.innerHTML = APPLIANCES.map((a) => `
+      <label style="display:flex;align-items:center;gap:10px;padding:10px;border:1px solid var(--gray-200);border-radius:8px;cursor:pointer;">
+        <input type="checkbox" class="appliance-check" value="${a.id}" style="width:18px;height:18px;">
+        <span style="flex:1;font-size:14px;">${a.label}</span>
+        <span style="font-size:12px;color:var(--gray-400);">${a.kwh} kWh</span>
+      </label>
+    `).join("");
+
+    document.querySelectorAll(".appliance-check").forEach((cb) => {
+      cb.addEventListener("change", updateManualSummary);
+    });
+  }
+
+  function updateManualSummary() {
+    const checked = [...document.querySelectorAll(".appliance-check:checked")].map((cb) => cb.value);
+    const selected = APPLIANCES.filter((a) => checked.includes(a.id));
+    const summary = document.getElementById("manual-shed-summary");
+
+    if (!selected.length) {
+      summary.style.display = "none";
+      return;
+    }
+
+    const totalKwh = selected.reduce((sum, a) => sum + a.kwh, 0);
+    const totalCo2 = selected.reduce((sum, a) => sum + (a.kwh * a.co2PerKwh), 0);
+    const totalCost = selected.reduce((sum, a) => sum + (a.kwh * a.costPerKwh), 0);
+
+    document.getElementById("manual-kwh").textContent = totalKwh.toFixed(2);
+    document.getElementById("manual-co2").textContent = totalCo2.toFixed(2);
+    document.getElementById("manual-cost").textContent = totalCost.toFixed(2);
+    summary.style.display = "block";
+  }
+
+  document.getElementById("connect-devices-btn").addEventListener("click", () => {
+    alert("Smart device integration is coming soon — this will connect to your home's appliances once supported.");
+  });
+
+  document.getElementById("email-plan-btn").addEventListener("click", () => {
+    const checked = [...document.querySelectorAll(".appliance-check:checked")].map((cb) => cb.value);
+    const selected = APPLIANCES.filter((a) => checked.includes(a.id));
+
+    if (!selected.length) {
+      alert("Select at least one appliance first.");
+      return;
+    }
+
+    const body = selected.map((a) => `- ${a.label}: ${a.kwh} kWh`).join("%0A");
+    window.location.href = `mailto:?subject=My Verdant Shed Plan&body=Here’s what I’m shedding today:%0A${body}`;
+  });
+
+  renderApplianceChecklist();
+  loadLedgerStats();
+
+  setInterval(() => {
+    loadLedgerStats();
+  }, 15000);
+})();
 </script>
 </body>
 </html>
