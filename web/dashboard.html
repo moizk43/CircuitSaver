@@ -11,7 +11,7 @@
 
 <header class="dash-header">
   <div class="dash-header-inner">
-    <a href="dashboard.html" class="logo" style="text-decoration:none;color:inherit;">
+    <a href="index.html" class="logo" style="text-decoration:none;color:inherit;">
       <span class="logo-icon" style="width:36px;height:36px;border-radius:12px;background:var(--brand-500);display:flex;align-items:center;justify-content:center;">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
           <path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"/>
@@ -244,18 +244,70 @@
     alert("Smart device integration is coming soon — this will connect to your home's appliances once supported.");
   });
 
-  document.getElementById("email-plan-btn").addEventListener("click", () => {
-    const checked = [...document.querySelectorAll(".appliance-check:checked")].map((cb) => cb.value);
-    const selected = APPLIANCES.filter((a) => checked.includes(a.id));
+document.getElementById("email-plan-btn").addEventListener("click", async () => {
+  const checked = [...document.querySelectorAll(".appliance-check:checked")].map((cb) => cb.value);
+  const selected = APPLIANCES.filter((a) => checked.includes(a.id));
 
-    if (!selected.length) {
-      alert("Select at least one appliance first.");
-      return;
-    }
+  if (!selected.length) {
+    alert("Select at least one appliance first.");
+    return;
+  }
 
-    const body = selected.map((a) => `- ${a.label}: ${a.kwh} kWh`).join("%0A");
-    window.location.href = `mailto:?subject=My Circuit Saver Shed Plan&body=Here’s what I’m shedding today:%0A${body}`;
-  });
+  const totalKwh = selected.reduce((sum, a) => sum + a.kwh, 0);
+  const totalCo2 = selected.reduce((sum, a) => sum + (a.kwh * a.co2PerKwh), 0);
+  const totalCost = selected.reduce((sum, a) => sum + (a.kwh * a.costPerKwh), 0);
+  const firstAppliance = selected[0];
+  const { email: userEmail } = getSession();
+
+  const btn = document.getElementById("email-plan-btn");
+  const originalText = btn.textContent;
+  btn.disabled = true;
+  btn.textContent = "Sending...";
+
+  try {
+    await authFetch("/api/manual-shed-email/summary", {
+      method: "POST",
+      body: JSON.stringify({
+        email: userEmail,
+        appliances: selected.map((a, index) => ({
+          order: index + 1,
+          id: a.id,
+          label: a.label,
+          kwh: a.kwh,
+          estimated_carbon_saved_lbs: Number((a.kwh * a.co2PerKwh).toFixed(2)),
+          estimated_cost_saved_usd: Number((a.kwh * a.costPerKwh).toFixed(2))
+        })),
+        totals: {
+          estimated_kwh_shed: Number(totalKwh.toFixed(2)),
+          estimated_carbon_saved_lbs: Number(totalCo2.toFixed(2)),
+          estimated_cost_saved_usd: Number(totalCost.toFixed(2))
+        }
+      })
+    });
+
+    await authFetch("/api/manual-shed-email/appliance", {
+      method: "POST",
+      body: JSON.stringify({
+        email: userEmail,
+        appliance: {
+          order: 1,
+          id: firstAppliance.id,
+          label: firstAppliance.label,
+          kwh: firstAppliance.kwh,
+          estimated_carbon_saved_lbs: Number((firstAppliance.kwh * firstAppliance.co2PerKwh).toFixed(2)),
+          estimated_cost_saved_usd: Number((firstAppliance.kwh * firstAppliance.costPerKwh).toFixed(2))
+        }
+      })
+    });
+
+    alert(`Emails sent to ${userEmail}: one summary email and one appliance-specific email for ${firstAppliance.label}.`);
+  } catch (err) {
+    alert(err.message || "Failed to send email plan.");
+  } finally {
+    btn.disabled = false;
+    btn.textContent = originalText;
+  }
+});
 
   renderApplianceChecklist();
   loadLedgerStats();
