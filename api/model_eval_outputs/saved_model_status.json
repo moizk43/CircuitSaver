@@ -1,0 +1,8 @@
+{
+  "baseline_Austin_TX": true,
+  "baseline_Austin_TX_loadable": true,
+  "baseline_London_UK": true,
+  "baseline_London_UK_loadable": true,
+  "anti_rebound_model_exists": true,
+  "anti_rebound_model_loadable": true
+}

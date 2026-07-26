@@ -1,0 +1,10 @@
+{
+  "rows": 6400,
+  "accuracy": 0.81953125,
+  "labels": [
+    "immediate",
+    "long_delay",
+    "medium_delay",
+    "short_delay"
+  ]
+}

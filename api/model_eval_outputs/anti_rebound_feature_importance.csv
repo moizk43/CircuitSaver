@@ -1,0 +1,8 @@
+feature,importance
+transformer_loading_percent,0.5530327234214409
+appliance_kw,0.18563674404609948
+num_simultaneous_restarts,0.1273133562480838
+cost_priority_weight,0.038572826034157494
+carbon_priority_weight,0.03729795993746045
+flexibility_score,0.036771723272192615
+transformer_rated_kva,0.02137466704056528

@@ -1,0 +1,38 @@
+{
+  "baseline": [
+    {
+      "region": "Austin_TX",
+      "rows": 1435,
+      "mae": 0.1555014482212224,
+      "rmse": 0.2622269137995378,
+      "r2": 0.9841180398722214,
+      "status": "ok"
+    },
+    {
+      "region": "London_UK",
+      "rows": 3510057,
+      "mae": 0.04500589360816874,
+      "rmse": 0.08948982753798647,
+      "r2": 0.7255458794957529,
+      "status": "ok"
+    }
+  ],
+  "anti_rebound": {
+    "rows": 6400,
+    "accuracy": 0.81953125,
+    "labels": [
+      "immediate",
+      "long_delay",
+      "medium_delay",
+      "short_delay"
+    ]
+  },
+  "saved_models": {
+    "baseline_Austin_TX": true,
+    "baseline_Austin_TX_loadable": true,
+    "baseline_London_UK": true,
+    "baseline_London_UK_loadable": true,
+    "anti_rebound_model_exists": true,
+    "anti_rebound_model_loadable": true
+  }
+}

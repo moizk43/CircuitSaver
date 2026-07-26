@@ -1,0 +1,5 @@
+,immediate,long_delay,medium_delay,short_delay
+immediate,3,0,0,12
+long_delay,0,235,62,0
+medium_delay,0,41,580,43
+short_delay,0,0,73,231
