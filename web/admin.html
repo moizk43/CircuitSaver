@@ -27,27 +27,21 @@
   <h1 style="font-size:28px;font-weight:700;">Grid Control</h1>
   <p style="color:var(--gray-500);margin-top:4px;">Transformer-level monitoring and shed event controls.</p>
 
-  <div class="stat-card" style="margin-top:32px;">
+    <div class="stat-card" style="margin-top:32px;">
     <p class="stat-card-title">Trigger Shed Event</p>
     <form id="shed-event-form" style="display:flex;flex-direction:column;gap:12px;margin-top:12px;max-width:400px;">
       <div class="field">
         <label for="shed-transformer">Transformer</label>
         <select id="shed-transformer" required></select>
       </div>
+
       <div class="field">
-        <label for="shed-target-kw">Shed Target (kW)</label>
+        <label for="shed-target-kw">Amount to Reduce (kW)</label>
         <input id="shed-target-kw" type="number" step="0.1" min="0" value="5" required>
       </div>
-      <div class="field">
-        <label for="shed-co2">CO₂ (lbs/kWh)</label>
-        <input id="shed-co2" type="number" step="0.01" min="0" value="0.85" required>
-      </div>
-      <div class="field">
-        <label for="shed-rate">Peak Rate ($/kWh)</label>
-        <input id="shed-rate" type="number" step="0.01" min="0" value="0.15" required>
-      </div>
+
       <button type="submit" class="btn btn-primary" id="shed-submit-btn">Trigger Shed Event</button>
-    </form>
+      </form>
     <div id="shed-result" style="margin-top:16px;display:none;"></div>
   </div>
 
@@ -151,17 +145,20 @@ async function loadLedger() {
   const ledger = await authFetch("/swarm/ledger");
   renderLedger(ledger);
 }
+const DEFAULT_CO2_LBS_PER_KWH = 0.85;
+const DEFAULT_PEAK_RATE_USD_PER_KWH = 0.15;
 
 document.getElementById("shed-event-form").addEventListener("submit", async (e) => {
   e.preventDefault();
+
   const btn = document.getElementById("shed-submit-btn");
   const resultBox = document.getElementById("shed-result");
 
   const payload = {
     transformer_id: document.getElementById("shed-transformer").value,
     shed_target_kw: parseFloat(document.getElementById("shed-target-kw").value),
-    current_co2_lbs_per_kwh: parseFloat(document.getElementById("shed-co2").value),
-    peak_rate_usd_per_kwh: parseFloat(document.getElementById("shed-rate").value)
+    current_co2_lbs_per_kwh: DEFAULT_CO2_LBS_PER_KWH,
+    peak_rate_usd_per_kwh: DEFAULT_PEAK_RATE_USD_PER_KWH
   };
 
   btn.disabled = true;
@@ -179,12 +176,11 @@ document.getElementById("shed-event-form").addEventListener("submit", async (e) 
       <div style="padding:12px;border:1px solid var(--brand-200);border-radius:10px;background:var(--brand-50);">
         <p style="font-weight:600;margin-bottom:8px;">Shed event complete for ${result.transformer_id}</p>
         <p style="font-size:13px;color:var(--gray-600);">
-          Allocated: ${result.total_allocated_kw.toFixed(2)} kW /
-          Target: ${payload.shed_target_kw} kW
-          (${result.shortfall_kw > 0 ? `shortfall: ${result.shortfall_kw.toFixed(2)} kW` : "target met"})
+          Allocated ${result.total_allocated_kw.toFixed(2)} kW of ${payload.shed_target_kw} kW target
+          ${result.shortfall_kw > 0 ? `(shortfall: ${result.shortfall_kw.toFixed(2)} kW)` : "(target met)"}
         </p>
         <p style="font-size:13px;color:var(--gray-600);">
-          Households involved: ${result.households_involved} ·
+          ${result.households_involved} households involved ·
           $${result.total_cost_saved_usd.toFixed(2)} saved ·
           ${result.total_carbon_saved_lbs.toFixed(2)} lbs CO₂ saved
         </p>
