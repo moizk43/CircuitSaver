@@ -4,149 +4,173 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="icon" type="image/x-icon" href="favicon.ico">
-<title>Circuit Saver — Smarter Clean Energy</title>
-<meta name="description" content="Circuit Saver empowers homeowners to harness clean energy intelligently. Reduce your emissions, lower your bills, and join a smarter grid.">
-<link href="https://fonts.googleapis.com/css2?family=Baloo+Tammudu+2:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<title>Circuit Saver — Grid Intelligence Software</title>
+<meta name="description" content="Circuit Saver predicts, allocates, and safely restores household electricity demand around grid peak events — eliminating the need for peaker plants without new hardware.">
+<link href="https://fonts.googleapis.com/css2?family=Baloo+Tammudu+2:wght@600;700;800&family=Inter:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
 
-<nav class="navbar">
-  <div class="container navbar-inner">
-    <a href="index.html" class="logo">
-      <span class="logo-icon">
-      <img src="logo.png" alt="Circuit Saver Logo" style="width:36px;height:36px;">
+<nav class="app-nav">
+  <div class="container">
+    <a href="index.html" class="brand">
+      <span class="brand-mark">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M13 2 3 14h7l-1 8 10-12h-7l1-8z"/></svg>
       </span>
-      <span class="logo-text">Circuit Saver</span>
+      Circuit Saver
     </a>
-    <div class="nav-links" id="nav-auth-slot"></div>
-    <button class="mobile-toggle" aria-label="Toggle menu">
-      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+    <div class="nav-links" id="nav-links">
+      <a href="index.html#how-it-works" class="nav-link">How it works</a>
+      <a href="index.html#proof" class="nav-link">Results</a>
+      <div class="nav-actions" id="nav-auth-slot">
+        <a href="sign-in.html" class="btn btn-ghost btn-sm">Sign in</a>
+        <a href="get-started.html" class="btn btn-primary btn-sm">Get started</a>
+      </div>
+    </div>
+    <button class="mobile-toggle" id="mobile-toggle" aria-label="Toggle menu" aria-expanded="false" aria-controls="nav-links">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
     </button>
   </div>
-  <div class="mobile-menu" id="nav-auth-slot-mobile"></div>
 </nav>
 
-<section class="hero bg-mesh">
-  <div class="hero-grid">
-    <div class="hero-text">
-      <span class="hero-badge"><span class="pulse-dot"></span>The Future of Home Energy</span>
-      <h1 class="hero-title">Clean energy,<br><span class="text-gradient">intelligently</span> delivered.</h1>
-      <p class="hero-sub">Circuit Saver makes clean, sustainable energy accessible to every home — reducing costs, cutting emissions, and building a smarter grid for everyone.</p>
-      <div class="hero-cta">
-        <a href="get-started.html" class="btn btn-primary btn-lg">Get Started <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></a>
-        <a href="sign-in.html" class="btn btn-secondary btn-lg">Sign In</a>
-      </div>
-      <p class="hero-trust">No credit card required. Join thousands of smart homes.</p>
-    </div>
-    <div style="display:flex;justify-content:center;">
-      <div style="position:relative;display:flex;align-items:center;justify-content:center;">
-        <div style="position:absolute;inset:0;border-radius:50%;background:rgba(220,252,231,.3);filter:blur(60px);transform:scale(1.25);"></div>
-        <canvas id="globe-canvas" style="position:relative;z-index:10;width:340px;height:340px;"></canvas>
-      </div>
-    </div>
-  </div>
-  <button class="scroll-hint" aria-label="Scroll down">
-    <span style="font-size:12px;">Scroll</span>
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
-  </button>
-</section>
+<main id="main-content">
+  <section class="hero">
+    <div class="container hero-grid">
+      <div class="hero-text">
+        <span class="hero-badge"><span class="pulse-dot" aria-hidden="true"></span>Grid demand-response software</span>
 
-<section class="mission" id="mission">
-  <div class="container">
-    <div class="mission-header">
-      <span class="section-badge">Our Mission</span>
-      <h2 class="section-title">Built on four core pillars</h2>
-      <p class="section-sub">Every decision we make is guided by a commitment to accessible, intelligent, and sustainable energy for all.</p>
-    </div>
-    <div class="pillar-grid">
-      <div class="card">
-        <div class="pillar-icon" style="background:var(--brand-100);color:var(--brand-600);">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2 3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+        <div class="hero-stat-callout">
+          <div><div class="num">$1B</div><div class="lbl">Peaker plant cost</div></div>
+          <div class="sep" aria-hidden="true"></div>
+          <div><div class="num">5%</div><div class="lbl">Of the year it runs</div></div>
+          <div class="sep" aria-hidden="true"></div>
+          <div><div class="num">0</div><div class="lbl">New hardware required</div></div>
         </div>
-        <h3 class="pillar-title">Smart Efficiency</h3>
-        <p class="pillar-desc">AI-driven load management shifts your energy use to the cleanest, cheapest hours automatically.</p>
-      </div>
-      <div class="card">
-        <div class="pillar-icon" style="background:var(--sky-50);color:var(--sky-500);">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 12h4l3-9 4 18 3-9h6"/></svg>
-        </div>
-        <h3 class="pillar-title">Grid Stability</h3>
-        <p class="pillar-desc">Coordinated household participation keeps local transformers stable during peak demand.</p>
-      </div>
-      <div class="card">
-        <div class="pillar-icon" style="background:var(--amber-50);color:var(--amber-500);">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/></svg>
-        </div>
-        <h3 class="pillar-title">Lower Bills</h3>
-        <p class="pillar-desc">Homeowners save real money every month by shifting usage away from expensive peak rates.</p>
-      </div>
-      <div class="card">
-        <div class="pillar-icon" style="background:var(--rose-50);color:#f43f5e;">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21l7.8-7.8 1-1a5.5 5.5 0 0 0 0-7.8z"/></svg>
-        </div>
-        <h3 class="pillar-title">Climate Impact</h3>
-        <p class="pillar-desc">Every shifted kilowatt-hour reduces real carbon emissions across your neighborhood grid.</p>
-      </div>
-    </div>
-    <div class="stats-band">
-      <div><div class="stat-value-connected">3</div><div class="stat-label">Homes Connected</div></div>
-      <div><div class="stat-value-saved">$5</div><div class="stat-label">Saved by Users</div></div>
-      <div><div class="stat-value-co2">32lbs</div><div class="stat-label">CO2 Prevented</div></div>
-      <div><div class="stat-value-uptime">99.9%</div><div class="stat-label">Grid Uptime</div></div>
-    </div>
-  </div>
-</section>
 
-<section class="impact bg-mesh">
-  <div class="container impact-inner">
-    <div class="impact-header">
-      <span class="section-badge">Impact Calculator</span>
-      <h2 class="section-title">See the impact at scale</h2>
-      <p class="section-sub">Drag the slider to see what happens as more homes join Circuit Saver.</p>
-    </div>
-    <div style="text-align:center;margin-bottom:16px;">
-      <span id="impact-pct-heading" style="font-size:48px;font-weight:800;color:var(--brand-500);">10</span><span style="font-size:24px;font-weight:700;color:var(--gray-400);">% of homes</span>
-    </div>
-    <input type="range" id="impact-slider" min="0" max="100" value="10">
-    <div class="slider-endpoints"><span>0%</span><span>100% of homes</span></div>
-    <div class="impact-cards">
-      <div class="impact-card" style="background:var(--amber-50);">
-        <span class="value" id="card-homes-value">0</span><span class="unit" id="card-homes-unit"></span>
-        <div class="label">Homes Participating</div>
+        <h1 class="text-display text-display-xl hero-title">
+          The grid is built for a peak that lasts <span class="accent">a few hours a year.</span>
+        </h1>
+        <p class="text-body-lg hero-sub">
+          Circuit Saver predicts, allocates, and safely restores household electricity demand around that narrow peak window — so utilities never have to build another peaker plant just to cover it.
+        </p>
+        <div class="hero-cta">
+          <a href="get-started.html" class="btn btn-primary btn-lg">Get started
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+          </a>
+          <a href="#how-it-works" class="btn btn-secondary btn-lg">See how it works</a>
+        </div>
+        <div class="hero-proof-row">
+          <div class="hero-proof-item"><div class="metric-value">0.984</div><div class="text-meta">Baseline model R² (Austin, TX)</div></div>
+          <div class="hero-proof-item"><div class="metric-value">81.95<span class="metric-unit">%</span></div><div class="text-meta">Anti-rebound classifier accuracy</div></div>
+          <div class="hero-proof-item"><div class="metric-value">2</div><div class="text-meta">Independently validated regions</div></div>
+        </div>
       </div>
-      <div class="impact-card" style="background:var(--brand-50);">
-        <span class="value" id="card-energy-value">2.2B</span><span class="unit" id="card-energy-unit">MWh/yr</span>
-        <div class="label">Energy Shifted</div>
-      </div>
-      <div class="impact-card" style="background:var(--sky-50);">
-        <span class="value" id="card-emissions-value">850K</span><span class="unit" id="card-emissions-unit">MT CO2</span>
-        <div class="label">Emissions Prevented</div>
-      </div>
-      <div class="impact-card" style="background:var(--rose-50);">
-        <span class="value" id="card-money-value">$326M</span><span class="unit" id="card-money-unit">/yr</span>
-        <div class="label">Money Saved</div>
-      </div>
-    </div>
-  </div>
-</section>
 
-<footer style="border-top:1px solid var(--gray-100);padding:40px 24px;background:#fff;">
-  <div class="container" style="display:flex;flex-direction:column;align-items:center;justify-content:space-between;gap:16px;font-size:14px;color:var(--gray-400);">
-    <div style="display:flex;align-items:center;gap:8px;font-weight:600;color:var(--gray-700);">
-      <span style="width:20px;height:20px;border-radius:8px;background:var(--brand-500);display:inline-block;"></span> Circuit Saver
+      <div class="demand-viz" aria-label="Illustrative animation of Circuit Saver predicting and flattening a grid demand peak">
+        <div class="demand-viz-header">
+          <span class="text-label" style="color:var(--dark-text-dim)">Transformer XFMR_AUS_001</span>
+          <span class="data-tag data-tag--illustrative">Illustrative simulation</span>
+        </div>
+        <canvas id="demand-canvas" width="520" height="220" role="img" aria-hidden="true"></canvas>
+        <div class="demand-viz-legend">
+          <span class="legend-item"><span class="legend-swatch" style="background:#94a3b8"></span>Predicted baseline demand</span>
+          <span class="legend-item"><span class="legend-swatch" style="background:#34c759"></span>Actual demand with Circuit Saver</span>
+        </div>
+        <p class="demand-viz-caption on-dark" id="demand-caption" data-current=""></p>
+        <div class="demand-viz-controls" aria-hidden="true">
+          <span class="stepper-dot"></span><span class="stepper-dot"></span><span class="stepper-dot"></span><span class="stepper-dot"></span>
+        </div>
+      </div>
     </div>
-    <p>&copy; <span id="year"></span> Circuit Saver Energy, Inc. All rights reserved.</p>
-    <p style="color:var(--brand-500);font-weight:500;">Built for a greener planet.</p>
+  </section>
+
+  <section class="section" id="how-it-works">
+    <div class="container">
+      <div class="container-narrow" style="margin-bottom:var(--space-10);padding:0;">
+        <span class="text-label" style="color:var(--brand-600);">The system</span>
+        <h2 class="text-h1" style="margin-top:8px;margin-bottom:12px;">Three components, one intervention.</h2>
+        <p class="text-body-lg">Machine learning predicts what would have happened. A deterministic, auditable optimizer decides what happens instead. Nothing is a black box to the household or the utility.</p>
+      </div>
+
+      <div class="pipeline">
+        <div class="pipeline-step">
+          <span class="pipeline-step-num">01</span>
+          <div class="pipeline-step-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18"/><path d="M7 14l4-4 3 3 5-6"/></svg></div>
+          <h3 class="text-h3">Predict</h3>
+          <p class="text-body">A Random Forest Regressor, trained separately per region, estimates each household's normal load — the baseline every savings figure is measured against.</p>
+        </div>
+        <div class="pipeline-step">
+          <span class="pipeline-step-num">02</span>
+          <div class="pipeline-step-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 2v4M12 18v4M4.9 4.9l2.8 2.8M16.3 16.3l2.8 2.8M2 12h4M18 12h4M4.9 19.1l2.8-2.8M16.3 7.7l2.8-2.8"/></svg></div>
+          <h3 class="text-h3">Allocate</h3>
+          <p class="text-body">The Swarm Engine — a deterministic, weighted water-filling optimizer, not a model — distributes the shed target across households by fairness, priority, and available capacity.</p>
+        </div>
+        <div class="pipeline-step">
+          <span class="pipeline-step-num">03</span>
+          <div class="pipeline-step-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg></div>
+          <h3 class="text-h3">Protect</h3>
+          <p class="text-body">An Anti-Rebound Classifier staggers restart timing per household, preventing every shed device from switching back on at once and causing a second spike.</p>
+        </div>
+        <div class="pipeline-step">
+          <span class="pipeline-step-num">04</span>
+          <div class="pipeline-step-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></div>
+          <h3 class="text-h3">Audit</h3>
+          <p class="text-body">Every shed event, allocation, and restart is logged to a ledger — because a household or utility partner deserves to know exactly why their power was shed.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section-tight" id="proof">
+    <div class="container">
+      <div class="proof-strip grid grid-4">
+        <div class="proof-item"><div class="metric-value metric-value--lg">0.984 / 0.726</div><div class="text-label" style="color:var(--dark-text-dim);margin-top:6px;">Baseline model R² — Austin / London</div></div>
+        <div class="proof-item"><div class="metric-value metric-value--lg">81.95<span class="metric-unit" style="color:var(--dark-text-dim)">%</span></div><div class="text-label" style="color:var(--dark-text-dim);margin-top:6px;">Anti-rebound classifier accuracy</div></div>
+        <div class="proof-item"><div class="metric-value metric-value--lg">34<span class="metric-unit" style="color:var(--dark-text-dim)">%</span></div><div class="text-label" style="color:var(--dark-text-dim);margin-top:6px;">Cost reduction shown by independent load-shifting research</div></div>
+        <div class="proof-item"><div class="metric-value metric-value--lg">Shift, not reduce</div><div class="text-label" style="color:var(--dark-text-dim);margin-top:6px;">The economics depend on flattening the peak, not cutting total kWh</div></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container-narrow" style="text-align:center;">
+      <h2 class="text-h1" style="margin-bottom:var(--space-4);">See your household's allocation.</h2>
+      <p class="text-body-lg" style="margin-bottom:var(--space-8);">Create an account to see live priority scoring, shed events, and savings from your own connected transformer.</p>
+      <a href="get-started.html" class="btn btn-primary btn-lg">Get started free</a>
+    </div>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <div class="container footer-grid">
+    <a href="index.html" class="brand"><span class="brand-mark"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M13 2 3 14h7l-1 8 10-12h-7l1-8z"/></svg></span>Circuit Saver</a>
+    <p class="text-meta">Grid intelligence software for household demand response.</p>
   </div>
 </footer>
 
-<script src="js/config.js"></script>
 <script src="js/auth.js"></script>
-<script src="js/counter.js"></script>
-<script src="js/globe.js"></script>
-<script src="js/impact-slider.js"></script>
-<script src="js/main.js"></script>
-<script>document.getElementById("year").textContent = new Date().getFullYear();</script>
+<script src="js/charts.js"></script>
+<script>
+  const toggle = document.getElementById("mobile-toggle");
+  const links = document.getElementById("nav-links");
+  toggle.addEventListener("click", () => {
+    const isOpen = links.classList.toggle("open");
+    toggle.setAttribute("aria-expanded", String(isOpen));
+  });
+
+  (function () {
+    const session = window.getSession();
+    if (session.email && session.token) {
+      document.getElementById("nav-auth-slot").innerHTML = `
+        <a href="${window.isAdminEmail(session.email) ? 'admin.html' : 'dashboard.html'}" class="btn btn-primary btn-sm">Go to dashboard</a>
+      `;
+    }
+  })();
+
+  const canvas = document.getElementById("demand-canvas");
+  const caption = document.getElementById("demand-caption");
+  const dots = Array.from(document.querySelectorAll(".stepper-dot"));
+  if (canvas) window.CSCharts.demandStory(canvas, caption, dots);
+</script>
 </body>
 </html>

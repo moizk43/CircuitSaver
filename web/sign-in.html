@@ -5,146 +5,110 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="icon" type="image/x-icon" href="favicon.ico">
 <title>Sign In — Circuit Saver</title>
-<link href="https://fonts.googleapis.com/css2?family=Baloo+Tammudu+2:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Baloo+Tammudu+2:wght@700;800&family=Inter:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-<div class="auth-page bg-mesh">
-  <div class="auth-box">
+<div class="auth-shell">
+  <div class="auth-card">
     <a href="index.html" class="auth-logo">
-      <img src="logo.png" alt="Circuit Saver Logo" style="width:150px;height:150px;" text="Circuit Saver">
-
-      <span class="logo-text">Circuit Saver</span>
+      <span class="brand-mark"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M13 2 3 14h7l-1 8 10-12h-7l1-8z"/></svg></span>
+      Circuit Saver
     </a>
+    <h1 class="text-h1 auth-title">Welcome back</h1>
+    <p class="text-body auth-sub">Sign in to see your household's live allocation.</p>
 
-    <div class="auth-card">
-      <h1 class="auth-title">Welcome back</h1>
-      <p class="auth-sub">Sign in to your Circuit Saver account.</p>
+    <div id="confirm-alert" class="alert alert-info" style="margin-bottom:var(--space-5);">
+      <svg class="alert-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+      <span data-alert-text>Check your email to confirm your account before signing in.</span>
+    </div>
+    <div id="general-error" class="alert alert-error" style="margin-bottom:var(--space-5);">
+      <svg class="alert-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+      <span data-alert-text id="general-error-text"></span>
+    </div>
 
-      <div id="general-error" class="alert-error" style="display:none;">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-        <span id="general-error-text"></span>
+    <form id="sign-in-form" novalidate>
+      <div class="field">
+        <label for="email">Email</label>
+        <input id="email" type="email" placeholder="you@example.com" autocomplete="username" autofocus>
+        <span class="error-msg" id="email-error"></span>
       </div>
-
-      <form id="sign-in-form" novalidate>
-        <div class="form-group">
-          <div class="field">
-            <label for="username">Email</label>
-            <input id="username" type="email" placeholder="you@example.com" autocomplete="email" autofocus>
-            <span class="error-msg" id="username-error" style="display:none;"></span>
-          </div>
-          <div class="field">
-            <label for="password">Password</label>
-            <div class="field-wrap">
-              <input id="password" type="password" placeholder="Your password" autocomplete="current-password">
-              <button type="button" class="toggle-pw" aria-label="Show password">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-              </button>
-            </div>
-            <span class="error-msg" id="password-error" style="display:none;"></span>
-          </div>
-          <button type="submit" class="btn btn-primary btn-lg btn-full" id="submit-btn">
-            <span id="submit-text">Sign In</span>
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+      <div class="field">
+        <label for="password">Password</label>
+        <div class="field-wrap">
+          <input id="password" type="password" placeholder="Your password" autocomplete="current-password">
+          <button type="button" class="toggle-pw" aria-label="Show password">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
           </button>
         </div>
-      </form>
-
-      <p class="auth-footer">Don't have an account? <a href="get-started.html">Get started free</a></p>
-    </div>
+        <span class="error-msg" id="password-error"></span>
+      </div>
+      <button type="submit" class="btn btn-primary btn-lg btn-full" id="submit-btn">
+        <span id="submit-text">Sign in</span>
+      </button>
+    </form>
+    <p class="auth-footer">Don't have an account? <a href="get-started.html">Get started</a></p>
   </div>
 </div>
 
-<script src="js/config.js"></script>
 <script src="js/auth.js"></script>
 <script>
-(function () {
   const params = new URLSearchParams(window.location.search);
   if (params.get("confirm") === "1") {
-    const email = params.get("email") || "your email";
-    const generalError = document.getElementById("general-error");
-    const generalErrorText = document.getElementById("general-error-text");
-    generalError.style.display = "flex";
-    generalError.style.background = "var(--brand-50, #ecfdf5)";
-    generalError.style.borderColor = "var(--brand-200, #a7f3d0)";
-    generalError.style.color = "var(--brand-700, #047857)";
-    generalErrorText.textContent =
-      `We've sent a confirmation link to ${email}. Please check your inbox and confirm your account before signing in.`;
-
-    const usernameInput = document.getElementById("username");
-    if (usernameInput) usernameInput.value = email;
+    document.getElementById("confirm-alert").classList.add("show");
+    const emailParam = params.get("email");
+    if (emailParam) document.getElementById("email").value = emailParam;
   }
-})();
-</script>
 
-<script>
-const form = document.getElementById("sign-in-form");
-const usernameInput = document.getElementById("username");
-const passwordInput = document.getElementById("password");
-const generalError = document.getElementById("general-error");
-const submitBtn = document.getElementById("submit-btn");
-const submitText = document.getElementById("submit-text");
+  const form = document.getElementById("sign-in-form");
+  const emailInput = document.getElementById("email");
+  const passwordInput = document.getElementById("password");
+  const submitBtn = document.getElementById("submit-btn");
+  const submitText = document.getElementById("submit-text");
 
-function clearErrors() {
-  ["username", "password"].forEach((id) => {
-    document.getElementById(id).classList.remove("error");
-    document.getElementById(id + "-error").style.display = "none";
-  });
-  generalError.style.display = "none";
-}
-
-function showFieldError(id, message) {
-  document.getElementById(id).classList.add("error");
-  const el = document.getElementById(id + "-error");
-  el.textContent = message;
-  el.style.display = "block";
-}
-
-form.addEventListener("submit", async (e) => {
-  e.preventDefault();
-  clearErrors();
-
-  let hasError = false;
-  const email = usernameInput.value.trim();
-  const password = passwordInput.value;
-
-  if (!email) {
-    showFieldError("username", "Email is required.");
-    hasError = true;
+  function clearErrors() {
+    ["email", "password"].forEach((id) => {
+      document.getElementById(id).classList.remove("error");
+      document.getElementById(id + "-error").textContent = "";
+    });
+    window.hideAlert("general-error");
   }
-  if (!password) {
-    showFieldError("password", "Password is required.");
-    hasError = true;
+  function showFieldError(id, message) {
+    document.getElementById(id).classList.add("error");
+    document.getElementById(id + "-error").textContent = message;
   }
-  if (hasError) return;
 
-  submitBtn.disabled = true;
-  submitText.textContent = "Signing in...";
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    clearErrors();
+    let hasError = false;
+    const email = emailInput.value.trim();
+    const password = passwordInput.value;
 
-  try {
-    const result = await signInUser(email, password);
-    setSession(result.email, result.access_token);
+    if (!email) { showFieldError("email", "Email is required."); hasError = true; }
+    if (!password) { showFieldError("password", "Password is required."); hasError = true; }
+    if (hasError) return;
 
-    if (isAdminEmail(result.email)) {
-      window.location.href = "admin.html";
-    } else {
-      window.location.href = "dashboard.html";
+    submitBtn.disabled = true;
+    submitText.textContent = "Signing in…";
+
+    try {
+      const result = await window.signInUser(email, password);
+      window.setSession(result.email, result.access_token);
+      window.location.href = window.isAdminEmail(result.email) ? "admin.html" : "dashboard.html";
+    } catch (err) {
+      submitBtn.disabled = false;
+      submitText.textContent = "Sign in";
+      window.showAlert("general-error", "error", err.message);
     }
-  } catch (err) {
-    submitBtn.disabled = false;
-    submitText.textContent = "Sign In";
-    generalError.style.display = "flex";
-    document.getElementById("general-error-text").textContent =
-      err.message || "Sign in failed. Please try again.";
-  }
-});
-
-document.querySelectorAll(".toggle-pw").forEach((btn) => {
-  btn.addEventListener("click", () => {
-    const input = btn.previousElementSibling;
-    input.type = input.type === "password" ? "text" : "password";
   });
-});
+
+  document.querySelectorAll(".toggle-pw").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const input = btn.previousElementSibling;
+      input.type = input.type === "password" ? "text" : "password";
+    });
+  });
 </script>
 </body>
 </html>
