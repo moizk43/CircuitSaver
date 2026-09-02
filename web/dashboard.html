@@ -5,315 +5,217 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="icon" type="image/x-icon" href="favicon.ico">
 <title>Dashboard — Circuit Saver</title>
-<link href="https://fonts.googleapis.com/css2?family=Baloo+Tammudu+2:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Baloo+Tammudu+2:wght@700;800&family=Inter:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/style.css">
 </head>
-<body>
+<body class="app-shell">
 
-<header class="dash-header">
-  <div class="dash-header-inner">
-    <a href="index.html" class="logo" style="text-decoration:none;color:inherit;">
-      <img src="logo.png" alt="Circuit Saver Logo" style="width:36px;height:36px;">
-      <span class="logo-text">Circuit Saver</span>
+<header class="app-header">
+  <div class="container">
+    <a href="index.html" class="brand">
+      <span class="brand-mark"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M13 2 3 14h7l-1 8 10-12h-7l1-8z"/></svg></span>
+      Circuit Saver
     </a>
-
-    <div id="header-right" style="display:flex;align-items:center;gap:16px;">
-      <span style="font-size:14px;color:var(--gray-500);font-weight:500;">
-        Welcome back, <span id="username-display" style="color:var(--gray-900);font-weight:600;"></span>
+    <div class="row" style="gap:var(--space-4);" id="header-right">
+      <span id="conn-strip" class="conn-strip conn-strip--reconnecting" role="status" aria-live="polite">
+        <span class="badge-dot"></span><span id="conn-strip-text">Connecting…</span>
       </span>
-      <button class="btn btn-ghost btn-sm" id="sign-out-btn" type="button">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
-          <polyline points="16 17 21 12 16 7"/>
-          <line x1="21" y1="12" x2="9" y2="12"/>
-        </svg>
-        Sign out
-      </button>
+      <button class="btn btn-ghost btn-sm" id="signout-btn">Sign out</button>
     </div>
   </div>
 </header>
 
-<main class="dash-main">
-  <div>
-    <p class="dash-eyebrow">Dashboard</p>
-    <h1 class="dash-title">Your Impact</h1>
-    <p class="dash-sub">Here's how Circuit Saver is working for you.</p>
-  </div>
+<main class="app-main">
+  <div class="container">
 
-  <div class="brand-hero">
-    <div class="logo-icon">
-      <img src="logo2.png" alt="Circuit Saver Logo" style="width:100px;height:100px;">
-    </div>
-    <p style="margin-top:20px;font-size:24px;font-weight:800;">Circuit Saver</p>
-    <p style="color:var(--brand-500);font-weight:600;font-size:14px;margin-top:4px;">Clean energy, intelligently delivered.</p>
-  </div>
+    <section class="status-banner" id="status-banner" aria-live="polite">
+      <div class="status-banner-main">
+        <span class="badge badge-normal" id="status-badge"><span class="badge-dot"></span>Grid status: normal</span>
+        <h1 class="text-h1 on-dark" style="margin-top:var(--space-3);">No active peak event on your transformer</h1>
+        <p class="text-body on-dark" style="margin-top:6px;max-width:520px;">Circuit Saver is monitoring your connected transformer continuously. You'll see this panel change the moment a shift is requested.</p>
+      </div>
+      <div class="status-banner-meta">
+        <div class="status-banner-meta-item"><div class="metric-value metric-value--lg" id="stat-money-saved">$0</div><div class="text-label" style="color:var(--dark-text-dim);">Total savings <span class="data-tag data-tag--historical" style="margin-left:6px;">Historical</span></div></div>
+        <div class="status-banner-meta-item"><div class="metric-value metric-value--lg" id="stat-co2-saved">0<span class="metric-unit" style="color:var(--dark-text-dim)">lbs CO₂</span></div><div class="text-label" style="color:var(--dark-text-dim);">Emissions avoided</div></div>
+        <div class="status-banner-meta-item"><div class="metric-value metric-value--lg" id="stat-events">0</div><div class="text-label" style="color:var(--dark-text-dim);">Shed events recorded</div></div>
+      </div>
+    </section>
 
-  <div class="stat-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:20px;margin-top:32px;">
-    <div class="stat-card">
-      <p class="stat-card-title">Money Saved</p>
-      <p style="font-size:13px;color:var(--gray-500);">Total savings from real ledger activity</p>
-      <p id="stat-money-saved" style="font-size:32px;font-weight:700;color:var(--brand-500);margin-top:8px;">$0</p>
-      <p style="font-size:13px;color:var(--gray-500);margin-top:8px;">Computed by summing estimated cost savings across all events.</p>
-    </div>
+    <div class="grid grid-2" style="align-items:start;">
+      <div class="card allocation-card" id="allocation-section">
+        <div class="card-header">
+          <h2 class="text-h2">Your household</h2>
+          <span class="tooltip-trigger" tabindex="0">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--ink-400)" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+            <span class="tooltip-bubble">Priority score reflects your carbon and cost weighting plus how much flexible load you have available — it decides how much of a shed target you're asked to shift.</span>
+          </span>
+        </div>
+        <div id="allocation-content">
+          <div class="skeleton skeleton-title"></div>
+          <div class="skeleton skeleton-text" style="width:90%"></div>
+          <div class="skeleton skeleton-text" style="width:70%"></div>
+        </div>
+      </div>
 
-    <div class="stat-card">
-      <p class="stat-card-title">Energy Comparison</p>
-      <p style="font-size:13px;color:var(--gray-500);">Equivalent impact, visualized</p>
-      <p style="font-size:13px;color:var(--gray-500);margin-top:8px;">Enough energy to power</p>
-      <p id="stat-homes-powered" style="font-size:32px;font-weight:700;margin-top:4px;">0 <span style="font-size:16px;font-weight:500;">homes</span></p>
-      <p style="font-size:13px;color:var(--gray-500);">for an entire day</p>
-    </div>
-
-    <div class="stat-card">
-      <p class="stat-card-title">Energy Saved</p>
-      <p style="font-size:13px;color:var(--gray-500);">Cumulative energy shifted</p>
-      <p id="stat-energy-saved" style="font-size:32px;font-weight:700;margin-top:8px;">0 kWh</p>
-      <p style="font-size:13px;color:var(--gray-500);margin-top:8px;">Summed from allocated load across all ledger rows.</p>
-    </div>
-
-    <div class="stat-card">
-      <p class="stat-card-title">Emissions Reduced</p>
-      <p style="font-size:13px;color:var(--gray-500);">CO₂ equivalent prevented</p>
-      <p id="stat-emissions-reduced" style="font-size:32px;font-weight:700;margin-top:8px;">0 <span style="font-size:16px;font-weight:500;">lbs</span></p>
-      <p id="stat-trees-equivalent" style="font-size:13px;color:var(--gray-500);margin-top:8px;">Equivalent to planting 0 trees this year.</p>
-    </div>
-  </div>
-
-  <div class="stat-card" style="margin-top:32px;">
-    <p class="stat-card-title">Manual Shed — Choose Appliances</p>
-    <p style="font-size:13px;color:var(--gray-500);margin-top:4px;">Select what to shed today. We’ll estimate your savings instantly.</p>
-
-    <div id="appliance-checklist" style="display:flex;flex-direction:column;gap:8px;margin-top:16px;"></div>
-
-    <div id="manual-shed-summary" style="margin-top:16px;padding:12px;border-radius:10px;background:var(--brand-50);display:none;">
-      <p style="font-size:14px;font-weight:600;">Estimated impact</p>
-      <p style="font-size:13px;color:var(--gray-600);margin-top:4px;">
-        <span id="manual-co2">0</span> lbs CO₂ saved ·
-        $<span id="manual-cost">0.00</span> saved ·
-        <span id="manual-kwh">0.00</span> kWh shed
-      </p>
+      <div class="card card-pad">
+        <h2 class="text-h2" style="margin-bottom:var(--space-4);">Why Circuit Saver shifts, not cuts</h2>
+        <p class="text-body" style="margin-bottom:var(--space-4);">
+          Circuit Saver's shed/restore mechanism primarily changes <em>when</em> your energy is used, not how much. The economic case doesn't depend on lowering your total kWh — it depends on flattening the narrow peak-demand window that would otherwise justify building an expensive new power plant.
+        </p>
+        <button class="why-toggle" id="why-toggle" aria-expanded="false" aria-controls="why-detail">Why does shifting matter more than cutting?</button>
+        <div class="why-detail" id="why-detail">
+          A peaker plant is sized for the top 5% of demand hours in a year. If enough households shift load out of that narrow window, the plant is never needed — regardless of total annual consumption. Secondary savings also come from avoiding rebound-spike inefficiency and shifting consumption toward hours with a cleaner generation mix.
+        </div>
+      </div>
     </div>
 
-    <div style="display:flex;gap:12px;margin-top:16px;flex-wrap:wrap;">
-      <button class="btn btn-secondary" id="connect-devices-btn" type="button">Connect Smart Devices</button>
-      <button class="btn btn-primary" id="email-plan-btn" type="button">Email Me This Plan</button>
+    <div class="card card-pad" style="margin-top:var(--space-6);">
+      <div class="card-header">
+        <div>
+          <h2 class="text-h2">Estimate your own shift</h2>
+          <p class="text-meta" style="margin-top:4px;">Illustrative calculator — select appliances you could shift during a peak event to see typical impact.</p>
+        </div>
+        <span class="data-tag data-tag--illustrative">Illustrative</span>
+      </div>
+      <div id="appliance-checklist"></div>
+      <p class="text-body" id="manual-summary" style="margin-top:var(--space-4);font-weight:600;"></p>
     </div>
+
   </div>
 </main>
 
-<script src="js/config.js"></script>
 <script src="js/auth.js"></script>
+<script src="js/api.js"></script>
 <script>
 (async function () {
-  const verifiedEmail = await verifySession();
-  if (!verifiedEmail) {
-    window.location.href = "sign-in.html";
-    return;
-  }
+  const verifiedEmail = await window.verifySession();
+  if (!verifiedEmail) return;
 
-  document.getElementById("username-display").textContent = verifiedEmail;
-
-  document.getElementById("sign-out-btn").addEventListener("click", () => {
-    clearSession();
-    window.location.href = "sign-in.html";
-  });
-
-  if (isAdminEmail(verifiedEmail)) {
+  if (window.isAdminEmail(verifiedEmail)) {
     document.getElementById("header-right").insertAdjacentHTML(
       "afterbegin",
-      `<a href="admin.html" style="font-weight:600;">Admin Panel</a>`
+      `<a href="admin.html" class="btn btn-secondary btn-sm">Admin view</a>`
     );
   }
+
+  document.getElementById("signout-btn").addEventListener("click", window.signOut);
+
+  document.getElementById("why-toggle").addEventListener("click", (e) => {
+    const detail = document.getElementById("why-detail");
+    const open = detail.classList.toggle("open");
+    e.target.setAttribute("aria-expanded", String(open));
+  });
 
   const APPLIANCES = [
-    { id: "ac", label: "Air Conditioning", kwh: 2.5, co2PerKwh: 0.85, costPerKwh: 0.15 },
-    { id: "water-heater", label: "Water Heater", kwh: 1.8, co2PerKwh: 0.85, costPerKwh: 0.15 },
-    { id: "dryer", label: "Clothes Dryer", kwh: 3.0, co2PerKwh: 0.85, costPerKwh: 0.15 },
+    { id: "ac", label: "Air conditioning", kwh: 2.5, co2PerKwh: 0.85, costPerKwh: 0.15 },
+    { id: "water-heater", label: "Water heater", kwh: 1.8, co2PerKwh: 0.85, costPerKwh: 0.15 },
+    { id: "dryer", label: "Clothes dryer", kwh: 3.0, co2PerKwh: 0.85, costPerKwh: 0.15 },
     { id: "dishwasher", label: "Dishwasher", kwh: 1.2, co2PerKwh: 0.85, costPerKwh: 0.15 },
-    { id: "ev-charger", label: "EV Charger", kwh: 7.0, co2PerKwh: 0.85, costPerKwh: 0.15 },
-    { id: "pool-pump", label: "Pool Pump", kwh: 1.5, co2PerKwh: 0.85, costPerKwh: 0.15 }
+    { id: "ev-charger", label: "EV charger", kwh: 7.2, co2PerKwh: 0.85, costPerKwh: 0.15 },
   ];
-
-  function formatCurrency(value) {
-    return new Intl.NumberFormat("en-US", {
-      style: "currency",
-      currency: "USD",
-      maximumFractionDigits: 0
-    }).format(value);
-  }
-
-  function formatNumber(value, maximumFractionDigits = 0) {
-    return new Intl.NumberFormat("en-US", {
-      maximumFractionDigits
-    }).format(value);
-  }
-
-  function renderLedgerStats(ledger) {
-    const totalCostSaved = ledger.reduce(
-      (sum, entry) => sum + Number(entry.estimated_cost_saved_usd || 0),
-      0
-    );
-
-    const totalAllocatedKwh = ledger.reduce(
-      (sum, entry) => sum + Number(entry.allocated_kw || 0),
-      0
-    );
-
-    const totalCarbonSavedLbs = ledger.reduce(
-      (sum, entry) => sum + Number(entry.estimated_carbon_saved_lbs || 0),
-      0
-    );
-
-    const totalMwhShifted = totalAllocatedKwh / 1000;
-    const homesPoweredForDay = totalAllocatedKwh / 30;
-    const metricTonsSaved = totalCarbonSavedLbs / 2204.62;
-    const treesEquivalent = totalCarbonSavedLbs / 48;
-
-    document.getElementById("stat-money-saved").textContent =
-      formatCurrency(totalCostSaved);
-
-    document.getElementById("stat-homes-powered").innerHTML =
-      `${formatNumber(homesPoweredForDay)} <span style="font-size:16px;font-weight:500;">homes</span>`;
-
-    document.getElementById("stat-energy-saved").textContent =
-      totalMwhShifted >= 1
-        ? `${formatNumber(totalMwhShifted, 1)} MWh`
-        : `${formatNumber(totalAllocatedKwh, 0)} kWh`;
-
-    document.getElementById("stat-emissions-reduced").innerHTML =
-      metricTonsSaved >= 1
-        ? `${formatNumber(metricTonsSaved, 1)} <span style="font-size:16px;font-weight:500;">Metric Tons</span>`
-        : `${formatNumber(totalCarbonSavedLbs, 0)} <span style="font-size:16px;font-weight:500;">lbs</span>`;
-
-    document.getElementById("stat-trees-equivalent").textContent =
-      `Equivalent to planting ${formatNumber(treesEquivalent)} trees this year.`;
-  }
-
-  async function loadLedgerStats() {
-    try {
-      const ledger = await authFetch("/swarm/ledger");
-      renderLedgerStats(Array.isArray(ledger) ? ledger : []);
-    } catch (err) {
-      console.error("Failed to load ledger stats:", err);
-    }
-  }
 
   function renderApplianceChecklist() {
     const container = document.getElementById("appliance-checklist");
     container.innerHTML = APPLIANCES.map((a) => `
-      <label style="display:flex;align-items:center;gap:10px;padding:10px;border:1px solid var(--gray-200);border-radius:8px;cursor:pointer;">
-        <input type="checkbox" class="appliance-check" value="${a.id}" style="width:18px;height:18px;">
-        <span style="flex:1;font-size:14px;">${a.label}</span>
-        <span style="font-size:12px;color:var(--gray-400);">${a.kwh} kWh</span>
+      <label class="appliance-checklist-item">
+        <input type="checkbox" class="appliance-check" value="${a.id}">
+        <span style="flex:1;">${a.label}</span>
+        <span class="text-meta metric-value" style="font-size:13px;">${a.kwh.toFixed(1)}<span class="metric-unit">kW</span></span>
       </label>
     `).join("");
-
     document.querySelectorAll(".appliance-check").forEach((cb) => {
       cb.addEventListener("change", updateManualSummary);
     });
   }
 
   function updateManualSummary() {
-    const checked = [...document.querySelectorAll(".appliance-check:checked")].map((cb) => cb.value);
+    const checked = Array.from(document.querySelectorAll(".appliance-check:checked")).map((cb) => cb.value);
     const selected = APPLIANCES.filter((a) => checked.includes(a.id));
-    const summary = document.getElementById("manual-shed-summary");
+    const totalKw = selected.reduce((sum, a) => sum + a.kwh, 0);
+    const costSaved = totalKw * 0.15;
+    const co2Saved = totalKw * 0.85;
+    const summaryEl = document.getElementById("manual-summary");
+    if (!selected.length) { summaryEl.textContent = ""; return; }
+    summaryEl.innerHTML = `Shifting these during a peak event: <span class="metric-value">${totalKw.toFixed(1)}</span><span class="metric-unit">kW</span> — about ${window.CSFormat.currency(costSaved)} and ${co2Saved.toFixed(1)} lbs CO₂ per event.`;
+  }
+  renderApplianceChecklist();
 
-    if (!selected.length) {
-      summary.style.display = "none";
+  function renderAllocation(myRow) {
+    const el = document.getElementById("allocation-content");
+    if (!myRow) {
+      el.innerHTML = `
+        <div class="empty-state" style="padding:var(--space-6) 0;text-align:left;">
+          <p class="text-body" style="margin-bottom:0;">No allocation has been recorded for your account yet. When a shed event affects your connected transformer, your priority score and recommended shift will appear here.</p>
+        </div>`;
       return;
     }
-
-    const totalKwh = selected.reduce((sum, a) => sum + a.kwh, 0);
-    const totalCo2 = selected.reduce((sum, a) => sum + (a.kwh * a.co2PerKwh), 0);
-    const totalCost = selected.reduce((sum, a) => sum + (a.kwh * a.costPerKwh), 0);
-
-    document.getElementById("manual-kwh").textContent = totalKwh.toFixed(2);
-    document.getElementById("manual-co2").textContent = totalCo2.toFixed(2);
-    document.getElementById("manual-cost").textContent = totalCost.toFixed(2);
-    summary.style.display = "block";
+    const priorityPct = window.CSFormat.priorityScore(myRow.priority_score);
+    el.innerHTML = `
+      <div class="allocation-hero">
+        <div class="priority-ring-wrap">
+          <svg width="120" height="120" viewBox="0 0 120 120">
+            <circle cx="60" cy="60" r="52" fill="none" stroke="var(--ink-100)" stroke-width="10"/>
+            <circle cx="60" cy="60" r="52" fill="none" stroke="var(--brand-500)" stroke-width="10"
+              stroke-dasharray="${2 * Math.PI * 52}" stroke-dashoffset="${2 * Math.PI * 52 * (1 - priorityPct / 100)}"
+              stroke-linecap="round" transform="rotate(-90 60 60)"/>
+            <text x="60" y="66" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-weight="700" font-size="26" fill="var(--ink-900)">${priorityPct}</text>
+          </svg>
+        </div>
+        <div class="allocation-detail">
+          <p class="text-label">Your priority score</p>
+          <p class="text-body" style="margin-top:4px;">Reflects your household's carbon/cost priority weighting and available flexible capacity.</p>
+          ${myRow.recommended_appliance ? `<div class="appliance-pill">Recommended: ${myRow.recommended_appliance}${myRow.was_capped ? ' <span class="badge badge-elevated" style="margin-left:6px;">Capped</span>' : ''}</div>` : ""}
+          <div class="allocation-figures">
+            <div><div class="metric-value">${window.CSFormat.kw(myRow.allocated_kw)}<span class="metric-unit">kW</span></div><div class="text-meta">Allocated</div></div>
+            <div><div class="metric-value">${window.CSFormat.kw(myRow.shiftable_capacity_kwh)}<span class="metric-unit">kWh</span></div><div class="text-meta">Shiftable capacity</div></div>
+            <div><div class="metric-value">${window.CSFormat.currency(myRow.estimated_cost_saved_usd)}</div><div class="text-meta">Est. savings</div></div>
+          </div>
+        </div>
+      </div>`;
   }
 
-  document.getElementById("connect-devices-btn").addEventListener("click", () => {
-    alert("Smart device integration is coming soon — this will connect to your home's appliances once supported.");
+  function renderLedgerStats(ledger) {
+    const totalCostSaved = ledger.reduce((sum, r) => sum + (Number(r.estimated_cost_saved_usd) || 0), 0);
+    const totalCo2Saved = ledger.reduce((sum, r) => sum + (Number(r.estimated_carbon_saved_lbs) || 0), 0);
+    document.getElementById("stat-money-saved").textContent = window.CSFormat.currency(totalCostSaved);
+    document.getElementById("stat-co2-saved").innerHTML = `${window.CSFormat.co2(totalCo2Saved)}<span class="metric-unit">lbs CO₂</span>`;
+    document.getElementById("stat-events").textContent = ledger.length;
+
+    const myRow = ledger.find((r) => r.user_id === verifiedEmail || r.user_email === verifiedEmail);
+    renderAllocation(myRow);
+
+    const banner = document.getElementById("status-banner");
+    const badge = document.getElementById("status-badge");
+    if (myRow && myRow.was_capped === false) {
+      banner.classList.add("is-elevated");
+      badge.className = "badge badge-elevated";
+      badge.innerHTML = `<span class="badge-dot"></span>Peak event active`;
+    }
+  }
+
+  async function loadLedgerStats() {
+    try {
+      const ledger = await window.authFetch("/swarm/ledger");
+      renderLedgerStats(Array.isArray(ledger) ? ledger : []);
+    } catch (err) {
+      console.error("Failed to load ledger stats:", err);
+    }
+  }
+
+  const conn = window.createLiveConnection({
+    onMessage(data) {
+      loadLedgerStats();
+    },
+    onStatusChange(status) {
+      const strip = document.getElementById("conn-strip");
+      const text = document.getElementById("conn-strip-text");
+      strip.className = "conn-strip " + (status === "live" ? "conn-strip--live" : status === "offline" ? "conn-strip--offline" : "conn-strip--reconnecting");
+      text.textContent = status === "live" ? "Live" : status === "offline" ? "Offline" : "Reconnecting…";
+    },
+    onFallbackPoll: loadLedgerStats,
+    pollIntervalMs: 15000,
   });
-
-document.getElementById("email-plan-btn").addEventListener("click", async () => {
-  const checked = [...document.querySelectorAll(".appliance-check:checked")].map((cb) => cb.value);
-  const selected = APPLIANCES.filter((a) => checked.includes(a.id));
-
-  if (!selected.length) {
-    alert("Select at least one appliance first.");
-    return;
-  }
-
-  const totalKwh = selected.reduce((sum, a) => sum + a.kwh, 0);
-  const totalCo2 = selected.reduce((sum, a) => sum + (a.kwh * a.co2PerKwh), 0);
-  const totalCost = selected.reduce((sum, a) => sum + (a.kwh * a.costPerKwh), 0);
-  const firstAppliance = selected[0];
-  const session = getSession();
-  const userEmail = session.email;
-
-  if (!userEmail) {
-    alert("No signed-in email found. Please sign in again.");
-    return;
-  }
-
-  const btn = document.getElementById("email-plan-btn");
-  const originalText = btn.textContent;
-  btn.disabled = true;
-  btn.textContent = "Sending...";
-
-  try {
-    await authFetch("/api/manual-shed-email/summary", {
-      method: "POST",
-      body: JSON.stringify({
-        email: userEmail,
-        appliances: selected.map((a, index) => ({
-          order: index + 1,
-          id: a.id.replace(/-/g, "_"),
-          label: a.label,
-          kwh: a.kwh,
-          estimated_carbon_saved_lbs: Number((a.kwh * a.co2PerKwh).toFixed(2)),
-          estimated_cost_saved_usd: Number((a.kwh * a.costPerKwh).toFixed(2))
-        })),
-        totals: {
-          estimated_kwh_shed: Number(totalKwh.toFixed(2)),
-          estimated_carbon_saved_lbs: Number(totalCo2.toFixed(2)),
-          estimated_cost_saved_usd: Number(totalCost.toFixed(2))
-        }
-      })
-    });
-
-    await authFetch("/api/manual-shed-email/appliance", {
-      method: "POST",
-      body: JSON.stringify({
-        email: userEmail,
-        appliance: {
-          order: 1,
-          id: firstAppliance.id.replace(/-/g, "_"),
-          label: firstAppliance.label,
-          kwh: firstAppliance.kwh,
-          estimated_carbon_saved_lbs: Number((firstAppliance.kwh * firstAppliance.co2PerKwh).toFixed(2)),
-          estimated_cost_saved_usd: Number((firstAppliance.kwh * firstAppliance.costPerKwh).toFixed(2))
-        }
-      })
-    });
-
-    alert(`Sent 2 emails to ${userEmail}: a full summary and a recommendation for ${firstAppliance.label}.`);
-  } catch (err) {
-    alert(err.message || "Failed to send emails.");
-  } finally {
-    btn.disabled = false;
-    btn.textContent = originalText;
-  }
-});
-
-  renderApplianceChecklist();
-  loadLedgerStats();
-
-  setInterval(() => {
-    loadLedgerStats();
-  }, 15000);
+  window.addEventListener("beforeunload", () => conn.close());
 })();
 </script>
 </body>
