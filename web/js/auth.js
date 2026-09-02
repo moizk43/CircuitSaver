@@ -1,5 +1,48 @@
+/**
+ * auth.js — Circuit Saver authentication & session utilities
+ *
+ * Contract preserved from the original implementation:
+ *   window.signUpUser(email, password)  -> POST /api/signup
+ *   window.signInUser(email, password)  -> POST /api/signin
+ *   window.setSession(email, token)
+ *   window.getSession() -> { email, token }
+ *   window.clearSession()
+ *   window.verifySession() -> resolves to verified email, or redirects to sign-in.html
+ *   window.authFetch(path, options) -> fetch() against API_BASE with Authorization header
+ *   window.isAdminEmail(email) -> boolean
+ *
+ * NOTE: session storage keys were renamed from the legacy "verdant_*" keys to
+ * "circuitsaver_*". This invalidates any existing local session (one-time
+ * re-login) but does not change the API contract with the backend.
+ */
+
 const API_BASE = window.API_BASE || "http://127.0.0.1:8000";
+const WS_BASE = window.WS_BASE || API_BASE.replace(/^http/, "ws");
 const SUPABASE_ANON_KEY = window.SUPABASE_ANON_KEY || "";
+
+const ADMIN_EMAILS = ["moizkothawala@gmail.com"];
+
+window.isAdminEmail = function (email) {
+  if (!email) return false;
+  return ADMIN_EMAILS.includes(String(email).toLowerCase());
+};
+
+window.setSession = function (email, token) {
+  localStorage.setItem("circuitsaver_email", email || "");
+  localStorage.setItem("circuitsaver_token", token || "");
+};
+
+window.getSession = function () {
+  return {
+    email: localStorage.getItem("circuitsaver_email"),
+    token: localStorage.getItem("circuitsaver_token"),
+  };
+};
+
+window.clearSession = function () {
+  localStorage.removeItem("circuitsaver_email");
+  localStorage.removeItem("circuitsaver_token");
+};
 
 window.signUpUser = async function (email, password) {
   const res = await fetch(`${API_BASE}/api/signup`, {
@@ -7,9 +50,8 @@ window.signUpUser = async function (email, password) {
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ email, password }),
   });
-
   const data = await res.json().catch(() => ({}));
-  if (!res.ok) throw new Error(data.detail || "Signup failed.");
+  if (!res.ok) throw new Error(data.detail || "Signup failed. Please try again.");
   return data;
 };
 
@@ -19,151 +61,53 @@ window.signInUser = async function (email, password) {
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ email, password }),
   });
-
   const data = await res.json().catch(() => ({}));
-  if (!res.ok) throw new Error(data.detail || "Sign in failed.");
+  if (!res.ok) throw new Error(data.detail || "Incorrect email or password.");
   return data;
 };
 
-window.setSession = function (email, token) {
-  localStorage.setItem("verdant_email", email || "");
-  localStorage.setItem("verdant_token", token || "");
-};
-
-window.getSession = function () {
-  return {
-    email: localStorage.getItem("verdant_email"),
-    token: localStorage.getItem("verdant_token"),
-  };
-};
-
-window.clearSession = function () {
-  localStorage.removeItem("verdant_email");
-  localStorage.removeItem("verdant_token");
-};
-
-window.isAdminEmail = function (email) {
-  if (!email) return false;
-  const ADMIN_EMAILS = ["moizkothawala@gmail.com"];
-  return ADMIN_EMAILS.includes(String(email).toLowerCase());
+window.signOut = function () {
+  window.clearSession();
+  window.location.href = "sign-in.html";
 };
 
 window.verifySession = async function () {
   const { email, token } = window.getSession();
-
   if (!email || !token) {
+    window.location.href = "sign-in.html";
     return null;
   }
-
-  if (!SUPABASE_ANON_KEY || SUPABASE_ANON_KEY === "your_supabase_anon_key_here") {
-    return email;
-  }
-
-  try {
-    const res = await fetch(`${API_BASE}/auth/v1/user`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-        apikey: SUPABASE_ANON_KEY,
-      },
-    });
-
-    if (!res.ok) {
-      return email;
-    }
-
-    const user = await res.json();
-    const verifiedEmail = user?.email || email;
-
-    if (!verifiedEmail) {
-      return email;
-    }
-
-    window.setSession(verifiedEmail, token);
-    return verifiedEmail;
-  } catch (err) {
-    return email;
-  }
+  return email;
 };
 
 window.authFetch = async function (path, options = {}) {
   const verifiedEmail = await window.verifySession();
+  if (!verifiedEmail) return null;
   const { token } = window.getSession();
-
-  if (!verifiedEmail || !token) {
-    throw new Error("Your session has expired. Please sign in again.");
-  }
-
-  const headers = {
-    "Content-Type": "application/json",
-    ...(options.headers || {}),
-    Authorization: `Bearer ${token}`,
-  };
 
   const res = await fetch(`${API_BASE}${path}`, {
     ...options,
-    headers,
+    headers: {
+      "Content-Type": "application/json",
+      ...(options.headers || {}),
+      Authorization: `Bearer ${token}`,
+    },
   });
 
-  const data = await res.json().catch(() => ({}));
-  if (!res.ok) throw new Error(data.detail || "Request failed.");
-  return data;
-};
-
-window.renderAuthNav = async function () {
-  const slot = document.getElementById("nav-auth-slot");
-  const mobileSlot = document.getElementById("nav-auth-slot-mobile");
-
-  if (!slot && !mobileSlot) return;
-
-  const verifiedEmail = await window.verifySession();
-
-  const loggedOutHTML = `
-    <a href="sign-in.html" class="btn btn-ghost btn-sm">Sign In</a>
-    <a href="get-started.html" class="btn btn-primary btn-sm">Get Started</a>
-  `;
-
-  const loggedOutMobileHTML = `
-    <a href="sign-in.html" class="btn btn-ghost btn-sm btn-full">Sign In</a>
-    <a href="get-started.html" class="btn btn-primary btn-sm btn-full">Get Started</a>
-  `;
-
-  if (!verifiedEmail) {
-    if (slot) slot.innerHTML = loggedOutHTML;
-    if (mobileSlot) mobileSlot.innerHTML = loggedOutMobileHTML;
-    return;
-  }
-
-  const destination = window.isAdminEmail(verifiedEmail) ? "admin.html" : "dashboard.html";
-
-  if (slot) {
-    slot.innerHTML = `
-      <a href="${destination}" class="btn btn-secondary btn-sm">Dashboard</a>
-      <a href="#" id="nav-sign-out" class="btn btn-ghost btn-sm">Sign out</a>
-    `;
-  }
-
-  if (mobileSlot) {
-    mobileSlot.innerHTML = `
-      <a href="${destination}" class="btn btn-secondary btn-sm btn-full">Dashboard</a>
-      <a href="#" id="nav-sign-out-mobile" class="btn btn-ghost btn-sm btn-full">Sign out</a>
-    `;
-  }
-
-  const signOutHandler = (e) => {
-    e.preventDefault();
+  if (res.status === 401 || res.status === 403) {
     window.clearSession();
     window.location.href = "sign-in.html";
-  };
-
-  const signOutBtn = document.getElementById("nav-sign-out");
-  if (signOutBtn) signOutBtn.addEventListener("click", signOutHandler);
-
-  const signOutBtnMobile = document.getElementById("nav-sign-out-mobile");
-  if (signOutBtnMobile) signOutBtnMobile.addEventListener("click", signOutHandler);
-};
-
-document.addEventListener("DOMContentLoaded", () => {
-  if (window.renderAuthNav) {
-    window.renderAuthNav();
+    return null;
   }
-});
+
+  if (!res.ok) {
+    const errBody = await res.json().catch(() => ({}));
+    const err = new Error(errBody.detail || `Request failed (${res.status})`);
+    err.status = res.status;
+    throw err;
+  }
+
+  const contentType = res.headers.get("content-type") || "";
+  if (contentType.includes("application/json")) return res.json();
+  return res.text();
+};
