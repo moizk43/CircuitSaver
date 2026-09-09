@@ -1,0 +1,38 @@
+/* ==========================================================================
+   style-v2-patch.css — Landing page visual rhythm fix (pass 2)
+   ========================================================================== */
+
+.hero-stat-callout {
+  background: var(--surface-0);
+  color: var(--ink-900);
+  border: 1px solid var(--border-subtle);
+  box-shadow: var(--shadow-1);
+}
+.hero-stat-callout .sep { background: var(--border-subtle); }
+.hero-stat-callout .num { color: var(--brand-600); }
+.hero-stat-callout .lbl { color: var(--ink-400); }
+
+.proof-strip {
+  background: linear-gradient(180deg, var(--surface-0), var(--surface-2));
+  border: 1px solid var(--border-subtle);
+  box-shadow: var(--shadow-1);
+}
+.proof-strip .metric-value { color: var(--ink-900); }
+.proof-strip .text-label { color: var(--ink-400) !important; }
+.proof-item:not(:last-child) { border-right: 1px solid var(--border-subtle); }
+@media (max-width: 900px) {
+  .proof-item:not(:last-child) { border-right: none; border-bottom: 1px solid var(--border-subtle); padding-bottom: var(--space-4); margin-bottom: var(--space-4); }
+}
+
+.hero-badge {
+  background: var(--brand-50);
+  color: var(--brand-700);
+  border: 1px solid var(--brand-200);
+}
+
+.section-tight, #proof { background: var(--surface-2); }
+#how-it-works { background: var(--surface-1); }
+
+.pipeline-step .pipeline-step-icon { background: var(--brand-50); color: var(--brand-600); }
+
+.data-tag--info { color: var(--status-info); }

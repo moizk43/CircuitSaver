@@ -1,7 +1,15 @@
+/**
+ * api.js — shared data helpers, formatting utilities, WebSocket connection
+ * manager, and the Savings Estimator / household-profile API bindings.
+ */
+
 window.CSFormat = {
   currency(n) {
     const v = Number(n) || 0;
     return v.toLocaleString("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 2 });
+  },
+  currencyRange(low, high) {
+    return `${window.CSFormat.currency(low)}–${window.CSFormat.currency(high)}`;
   },
   kw(n, decimals = 1) {
     const v = Number(n) || 0;
@@ -20,6 +28,11 @@ window.CSFormat = {
   },
   timeHHMMSS(date = new Date()) {
     return date.toLocaleTimeString("en-US", { hour12: false });
+  },
+  dateShort(dateStr) {
+    const d = new Date(dateStr);
+    if (isNaN(d)) return dateStr;
+    return d.toLocaleDateString("en-US", { month: "short", day: "numeric" });
   },
   statusTone(status) {
     if (!status) return "normal";
@@ -74,7 +87,6 @@ window.createLiveConnection = function ({ onMessage, onStatusChange, onFallbackP
   function setStatus(status) {
     if (onStatusChange) onStatusChange(status);
   }
-
   function startPolling() {
     if (pollTimer) return;
     if (onFallbackPoll) {
@@ -85,7 +97,6 @@ window.createLiveConnection = function ({ onMessage, onStatusChange, onFallbackP
   function stopPolling() {
     if (pollTimer) { clearInterval(pollTimer); pollTimer = null; }
   }
-
   function connect() {
     if (closedByUser) return;
     setStatus(reconnectAttempts === 0 ? "connecting" : "reconnecting");
@@ -98,19 +109,16 @@ window.createLiveConnection = function ({ onMessage, onStatusChange, onFallbackP
       startPolling();
       return;
     }
-
     socket.onopen = () => {
       reconnectAttempts = 0;
       setStatus("live");
       stopPolling();
     };
-
     socket.onmessage = (event) => {
       let data;
       try { data = JSON.parse(event.data); } catch (e) { data = event.data; }
       if (onMessage) onMessage(data);
     };
-
     socket.onclose = () => {
       if (closedByUser) return;
       setStatus("reconnecting");
@@ -119,14 +127,9 @@ window.createLiveConnection = function ({ onMessage, onStatusChange, onFallbackP
       const delay = Math.min(1000 * 2 ** Math.min(reconnectAttempts, 5), 20000);
       setTimeout(connect, delay);
     };
-
-    socket.onerror = () => {
-      setStatus("offline");
-    };
+    socket.onerror = () => { setStatus("offline"); };
   }
-
   connect();
-
   return {
     close() {
       closedByUser = true;
@@ -134,4 +137,26 @@ window.createLiveConnection = function ({ onMessage, onStatusChange, onFallbackP
       if (socket) socket.close();
     },
   };
+};
+
+window.CSApi = {
+  async estimateSavings(address) {
+    const res = await fetch(`${API_BASE}/estimate/savings`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ address }),
+    });
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) throw new Error(data.detail || "Could not generate an estimate for that address.");
+    return data;
+  },
+  async getHouseholdProfile() {
+    return window.authFetch("/profile/household");
+  },
+  async saveHouseholdProfile(profile) {
+    return window.authFetch("/profile/household", {
+      method: "POST",
+      body: JSON.stringify(profile),
+    });
+  },
 };

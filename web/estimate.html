@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" type="image/x-icon" href="favicon.ico">
+<title>Savings Estimator — Circuit Saver</title>
+<meta name="description" content="See what Circuit Saver's grid intelligence could mean for your household.">
+<link href="https://fonts.googleapis.com/css2?family=Baloo+Tammudu+2:wght@600;700;800&family=Inter:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="css/style-v2-patch.css">
+</head>
+<body>
+
+<nav class="app-nav">
+  <div class="container">
+    <a href="index.html" class="brand">
+      <span class="brand-mark"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M13 2 3 14h7l-1 8 10-12h-7l1-8z"/></svg></span>
+      Circuit Saver
+    </a>
+    <div class="nav-links" id="nav-links">
+      <a href="index.html#how-it-works" class="nav-link">How it works</a>
+      <div class="nav-actions" id="nav-auth-slot">
+        <a href="sign-in.html" class="btn btn-ghost btn-sm">Sign in</a>
+        <a href="get-started.html" class="btn btn-primary btn-sm">Get started</a>
+      </div>
+    </div>
+    <button class="mobile-toggle" id="mobile-toggle" aria-label="Toggle menu" aria-expanded="false" aria-controls="nav-links">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+    </button>
+  </div>
+</nav>
+
+<main>
+  <section class="section-tight">
+    <div class="container-narrow">
+
+      <div id="estimator-input-view">
+        <div style="text-align:center;margin-bottom:var(--space-8);">
+          <span class="text-label" style="color:var(--brand-600);">Savings Estimator</span>
+          <h1 class="text-h1" style="margin-top:8px;margin-bottom:12px;">Where do you live?</h1>
+          <p class="text-body-lg">We'll estimate what Circuit Saver's peak-shifting intelligence could mean for a household like yours.</p>
+        </div>
+
+        <form id="estimate-form" class="card card-pad" novalidate>
+          <div class="field">
+            <label for="address">Address or city/region</label>
+            <input id="address" type="text" placeholder="e.g. Austin, TX" autocomplete="off" autofocus>
+            <span class="hint">We use this only to match you to a modeled region — nothing is geocoded or stored unless you create an account.</span>
+            <span class="error-msg" id="address-error"></span>
+          </div>
+          <button type="submit" class="btn btn-primary btn-lg btn-full" id="estimate-submit-btn">
+            <span id="estimate-submit-text">Calculate my potential savings</span>
+          </button>
+        </form>
+      </div>
+
+      <div id="estimator-loading-view" class="card card-pad" style="display:none;text-align:center;padding:var(--space-16) var(--space-6);">
+        <div class="skeleton" style="width:64px;height:64px;border-radius:50%;margin:0 auto var(--space-6);"></div>
+        <p class="text-h3" id="loading-line" style="margin-bottom:8px;">Analyzing local energy patterns…</p>
+        <p class="text-meta">Matching your location to Circuit Saver's validated grid models.</p>
+      </div>
+
+      <div id="estimator-results-view" style="display:none;">
+        <div style="text-align:center;margin-bottom:var(--space-8);">
+          <span class="data-tag data-tag--illustrative" id="result-confidence-tag">Estimated</span>
+          <h1 class="text-h1" style="margin-top:12px;margin-bottom:6px;">Your estimated impact</h1>
+          <div class="metric-value metric-value--xl" id="result-headline" style="color:var(--brand-600);">$0–$0</div>
+          <p class="text-body">Estimated annual household savings</p>
+        </div>
+
+        <div class="grid grid-3" style="margin-bottom:var(--space-6);">
+          <div class="card stat-card">
+            <p class="text-label">Peak load flexed</p>
+            <p class="metric-value metric-value--lg" id="result-peak-kw">—</p>
+          </div>
+          <div class="card stat-card">
+            <p class="text-label">Monthly savings</p>
+            <p class="metric-value metric-value--lg" id="result-monthly">—</p>
+          </div>
+          <div class="card stat-card">
+            <p class="text-label">CO₂ reduced / year</p>
+            <p class="metric-value metric-value--lg" id="result-co2">—</p>
+          </div>
+        </div>
+
+        <div class="card card-pad" style="margin-bottom:var(--space-6);">
+          <h2 class="text-h3" style="margin-bottom:var(--space-4);">How Circuit Saver would use this</h2>
+          <div class="pipeline" style="grid-template-columns:repeat(4,1fr);">
+            <div class="pipeline-step" style="padding:var(--space-4);">
+              <div class="pipeline-step-icon" style="width:32px;height:32px;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12l9-9 9 9M5 10v10h14V10"/></svg></div>
+              <p class="text-h3" style="font-size:14px;">Your household</p>
+              <p class="text-body" style="font-size:13px;">Modeled average load for your region</p>
+            </div>
+            <div class="pipeline-step" style="padding:var(--space-4);">
+              <div class="pipeline-step-icon" style="width:32px;height:32px;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2 3 14h7l-1 8 10-12h-7l1-8z"/></svg></div>
+              <p class="text-h3" style="font-size:14px;">Flexible loads</p>
+              <p class="text-body" style="font-size:13px;">Appliances that can shift in time</p>
+            </div>
+            <div class="pipeline-step" style="padding:var(--space-4);">
+              <div class="pipeline-step-icon" style="width:32px;height:32px;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 2v4M12 18v4M4.9 4.9l2.8 2.8M16.3 16.3l2.8 2.8M2 12h4M18 12h4"/></svg></div>
+              <p class="text-h3" style="font-size:14px;">Swarm allocation</p>
+              <p class="text-body" style="font-size:13px;">Fair share of the shed target</p>
+            </div>
+            <div class="pipeline-step" style="padding:var(--space-4);">
+              <div class="pipeline-step-icon" style="width:32px;height:32px;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></div>
+              <p class="text-h3" style="font-size:14px;">Transformer relief</p>
+              <p class="text-body" style="font-size:13px;">Peak reduced, savings realized</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="card card-pad" style="margin-bottom:var(--space-8);">
+          <button class="why-toggle" id="methodology-toggle" aria-expanded="false" aria-controls="methodology-detail">How we calculated this</button>
+          <div class="why-detail" id="methodology-detail">
+            <ul id="assumptions-list" style="margin:0;padding-left:18px;"></ul>
+          </div>
+        </div>
+
+        <div style="text-align:center;">
+          <a href="get-started.html" class="btn btn-primary btn-lg" id="continue-btn">Create an account to save this estimate</a>
+          <p class="text-meta" style="margin-top:var(--space-3);">
+            <button class="btn btn-ghost btn-sm" id="try-again-btn" type="button">Try a different address</button>
+          </p>
+        </div>
+      </div>
+
+    </div>
+  </section>
+</main>
+
+<script src="js/auth.js"></script>
+<script src="js/api.js"></script>
+<script>
+  const toggle = document.getElementById("mobile-toggle");
+  const links = document.getElementById("nav-links");
+  toggle.addEventListener("click", () => {
+    const isOpen = links.classList.toggle("open");
+    toggle.setAttribute("aria-expanded", String(isOpen));
+  });
+
+  const inputView = document.getElementById("estimator-input-view");
+  const loadingView = document.getElementById("estimator-loading-view");
+  const resultsView = document.getElementById("estimator-results-view");
+  const form = document.getElementById("estimate-form");
+  const addressInput = document.getElementById("address");
+  const submitBtn = document.getElementById("estimate-submit-btn");
+  const submitText = document.getElementById("estimate-submit-text");
+
+  const loadingLines = [
+    "Analyzing local energy patterns…",
+    "Matching your region to Circuit Saver's validated grid models…",
+    "Estimating flexible household capacity…",
+  ];
+
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    document.getElementById("address-error").textContent = "";
+    const address = addressInput.value.trim();
+    if (address.length < 3) {
+      document.getElementById("address-error").textContent = "Enter an address, city, or region.";
+      return;
+    }
+
+    submitBtn.disabled = true;
+    submitText.textContent = "Calculating…";
+    inputView.style.display = "none";
+    loadingView.style.display = "block";
+
+    let lineIdx = 0;
+    const loadingLineEl = document.getElementById("loading-line");
+    const lineTimer = setInterval(() => {
+      lineIdx = (lineIdx + 1) % loadingLines.length;
+      loadingLineEl.textContent = loadingLines[lineIdx];
+    }, 700);
+
+    try {
+      const [result] = await Promise.all([
+        window.CSApi.estimateSavings(address),
+        new Promise((r) => setTimeout(r, 1400)),
+      ]);
+      clearInterval(lineTimer);
+      renderResults(result, address);
+      loadingView.style.display = "none";
+      resultsView.style.display = "block";
+    } catch (err) {
+      clearInterval(lineTimer);
+      loadingView.style.display = "none";
+      inputView.style.display = "block";
+      submitBtn.disabled = false;
+      submitText.textContent = "Calculate my potential savings";
+      document.getElementById("address-error").textContent = err.message;
+    }
+  });
+
+  function renderResults(result, address) {
+    const tag = document.getElementById("result-confidence-tag");
+    tag.textContent = result.confidence === "region-matched" ? "Region-matched estimate" : "National-average estimate";
+    tag.className = "data-tag " + (result.confidence === "region-matched" ? "data-tag--live" : "data-tag--illustrative");
+
+    document.getElementById("result-headline").textContent =
+      window.CSFormat.currencyRange(result.estimated_annual_savings_low_usd, result.estimated_annual_savings_high_usd);
+
+    document.getElementById("result-peak-kw").innerHTML =
+      `${result.estimated_shiftable_capacity_kw_low}–${result.estimated_shiftable_capacity_kw_high}<span class="metric-unit">kW</span>`;
+
+    document.getElementById("result-monthly").textContent =
+      window.CSFormat.currencyRange(result.estimated_monthly_savings_low_usd, result.estimated_monthly_savings_high_usd);
+
+    document.getElementById("result-co2").innerHTML =
+      `${result.estimated_co2_reduction_kg_per_year}<span class="metric-unit">kg</span>`;
+
+    const list = document.getElementById("assumptions-list");
+    list.innerHTML = (result.assumptions || []).map((a) => `<li class="text-body" style="margin-bottom:8px;">${a}</li>`).join("");
+
+    sessionStorage.setItem("cs_pending_estimate", JSON.stringify({ address, result }));
+  }
+
+  document.getElementById("methodology-toggle").addEventListener("click", (e) => {
+    const detail = document.getElementById("methodology-detail");
+    const open = detail.classList.toggle("open");
+    e.target.setAttribute("aria-expanded", String(open));
+  });
+
+  document.getElementById("try-again-btn").addEventListener("click", () => {
+    resultsView.style.display = "none";
+    inputView.style.display = "block";
+    submitBtn.disabled = false;
+    submitText.textContent = "Calculate my potential savings";
+  });
+
+  (function () {
+    const session = window.getSession();
+    if (session.email && session.token) {
+      document.getElementById("nav-auth-slot").innerHTML = `
+        <a href="${window.isAdminEmail(session.email) ? 'admin.html' : 'dashboard.html'}" class="btn btn-primary btn-sm">Go to dashboard</a>
+      `;
+    }
+  })();
+</script>
+</body>
+</html>
