@@ -8,6 +8,7 @@
 <meta name="description" content="Circuit Saver predicts, allocates, and safely restores household electricity demand around grid peak events — eliminating the need for peaker plants without new hardware.">
 <link href="https://fonts.googleapis.com/css2?family=Baloo+Tammudu+2:wght@600;700;800&family=Inter:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="css/style-v2-patch.css">
 </head>
 <body>
 
@@ -21,6 +22,7 @@
     </a>
     <div class="nav-links" id="nav-links">
       <a href="index.html#how-it-works" class="nav-link">How it works</a>
+      <a href="estimate.html" class="nav-link">Estimate my savings</a>
       <a href="index.html#proof" class="nav-link">Results</a>
       <div class="nav-actions" id="nav-auth-slot">
         <a href="sign-in.html" class="btn btn-ghost btn-sm">Sign in</a>
@@ -54,7 +56,7 @@
           Circuit Saver predicts, allocates, and safely restores household electricity demand around that narrow peak window — so utilities never have to build another peaker plant just to cover it.
         </p>
         <div class="hero-cta">
-          <a href="get-started.html" class="btn btn-primary btn-lg">Get started
+          <a href="estimate.html" class="btn btn-primary btn-lg">See my potential savings
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
           </a>
           <a href="#how-it-works" class="btn btn-secondary btn-lg">See how it works</a>
@@ -124,10 +126,10 @@
   <section class="section-tight" id="proof">
     <div class="container">
       <div class="proof-strip grid grid-4">
-        <div class="proof-item"><div class="metric-value metric-value--lg">0.984 / 0.726</div><div class="text-label" style="color:var(--dark-text-dim);margin-top:6px;">Baseline model R² — Austin / London</div></div>
-        <div class="proof-item"><div class="metric-value metric-value--lg">81.95<span class="metric-unit" style="color:var(--dark-text-dim)">%</span></div><div class="text-label" style="color:var(--dark-text-dim);margin-top:6px;">Anti-rebound classifier accuracy</div></div>
-        <div class="proof-item"><div class="metric-value metric-value--lg">34<span class="metric-unit" style="color:var(--dark-text-dim)">%</span></div><div class="text-label" style="color:var(--dark-text-dim);margin-top:6px;">Cost reduction shown by independent load-shifting research</div></div>
-        <div class="proof-item"><div class="metric-value metric-value--lg">Shift, not reduce</div><div class="text-label" style="color:var(--dark-text-dim);margin-top:6px;">The economics depend on flattening the peak, not cutting total kWh</div></div>
+        <div class="proof-item"><div class="metric-value metric-value--lg">0.984 / 0.726</div><div class="text-label" style="margin-top:6px;">Baseline model R² — Austin / London</div></div>
+        <div class="proof-item"><div class="metric-value metric-value--lg">81.95<span class="metric-unit">%</span></div><div class="text-label" style="margin-top:6px;">Anti-rebound classifier accuracy</div></div>
+        <div class="proof-item"><div class="metric-value metric-value--lg">34<span class="metric-unit">%</span></div><div class="text-label" style="margin-top:6px;">Cost reduction shown by independent load-shifting research</div></div>
+        <div class="proof-item"><div class="metric-value metric-value--lg">Shift, not reduce</div><div class="text-label" style="margin-top:6px;">The economics depend on flattening the peak, not cutting total kWh</div></div>
       </div>
     </div>
   </section>
@@ -135,8 +137,8 @@
   <section class="section">
     <div class="container-narrow" style="text-align:center;">
       <h2 class="text-h1" style="margin-bottom:var(--space-4);">See your household's allocation.</h2>
-      <p class="text-body-lg" style="margin-bottom:var(--space-8);">Create an account to see live priority scoring, shed events, and savings from your own connected transformer.</p>
-      <a href="get-started.html" class="btn btn-primary btn-lg">Get started free</a>
+      <p class="text-body-lg" style="margin-bottom:var(--space-8);">Estimate your potential savings first, then create an account to see live priority scoring and savings from your own connected transformer.</p>
+      <a href="estimate.html" class="btn btn-primary btn-lg">Estimate my savings</a>
     </div>
   </section>
 </main>

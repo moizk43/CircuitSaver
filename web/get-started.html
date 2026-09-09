@@ -18,7 +18,12 @@
 
     <div id="form-view">
       <h1 class="text-h1 auth-title">Create your account</h1>
-      <p class="text-body auth-sub">Join Circuit Saver and see your household's grid impact.</p>
+      <p class="text-body auth-sub" id="auth-sub-text">Join Circuit Saver and see your household's grid impact.</p>
+
+      <div id="pending-estimate-banner" class="alert alert-success" style="display:none;margin-bottom:var(--space-5);">
+        <svg class="alert-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+        <span data-alert-text id="pending-estimate-text"></span>
+      </div>
 
       <form id="get-started-form" novalidate>
         <div class="field">
@@ -53,7 +58,21 @@
 </div>
 
 <script src="js/auth.js"></script>
+<script src="js/api.js"></script>
 <script>
+  const pendingRaw = sessionStorage.getItem("cs_pending_estimate");
+  let pendingEstimate = null;
+  if (pendingRaw) {
+    try { pendingEstimate = JSON.parse(pendingRaw); } catch (e) { pendingEstimate = null; }
+  }
+  if (pendingEstimate) {
+    document.getElementById("auth-sub-text").textContent = "Create an account to save your savings estimate and see it on your dashboard.";
+    const banner = document.getElementById("pending-estimate-banner");
+    banner.style.display = "flex";
+    document.getElementById("pending-estimate-text").textContent =
+      `We'll save your estimate for ${pendingEstimate.address} (${window.CSFormat.currencyRange(pendingEstimate.result.estimated_annual_savings_low_usd, pendingEstimate.result.estimated_annual_savings_high_usd)}/year) to your new account.`;
+  }
+
   const form = document.getElementById("get-started-form");
   const emailInput = document.getElementById("email");
   const passwordInput = document.getElementById("password");
@@ -70,6 +89,24 @@
   function showFieldError(id, message) {
     document.getElementById(id).classList.add("error");
     document.getElementById(id + "-error").textContent = message;
+  }
+
+  async function persistPendingEstimate() {
+    if (!pendingEstimate) return;
+    try {
+      const r = pendingEstimate.result;
+      await window.CSApi.saveHouseholdProfile({
+        address_text: pendingEstimate.address,
+        region: r.region_matched,
+        estimated_avg_load_kw: r.estimated_avg_household_load_kw,
+        estimated_annual_savings_low_usd: r.estimated_annual_savings_low_usd,
+        estimated_annual_savings_high_usd: r.estimated_annual_savings_high_usd,
+        estimated_co2_reduction_kg_per_year: r.estimated_co2_reduction_kg_per_year,
+      });
+      sessionStorage.removeItem("cs_pending_estimate");
+    } catch (err) {
+      console.error("Could not save pending estimate to profile:", err);
+    }
   }
 
   form.addEventListener("submit", async (e) => {
@@ -103,6 +140,8 @@
       }
 
       window.setSession(result.email, result.access_token);
+      await persistPendingEstimate();
+
       document.getElementById("form-view").style.display = "none";
       document.getElementById("success-view").style.display = "flex";
       document.getElementById("success-view").style.flexDirection = "column";

@@ -28,6 +28,14 @@
 <main class="app-main">
   <div class="container">
 
+    <p class="text-h2" id="greeting" style="margin-bottom:var(--space-6);">Good to see you.</p>
+
+    <div class="card card-pad" id="onboarding-card" style="display:none;margin-bottom:var(--space-6);border-left:3px solid var(--brand-500);">
+      <h2 class="text-h2" style="margin-bottom:8px;">Link your household</h2>
+      <p class="text-body" style="margin-bottom:var(--space-4);">You haven't estimated your household's impact yet. Do that once and Circuit Saver will personalize everything below to your address and region.</p>
+      <a href="estimate.html" class="btn btn-primary">Estimate my savings</a>
+    </div>
+
     <section class="status-banner" id="status-banner" aria-live="polite">
       <div class="status-banner-main">
         <span class="badge badge-normal" id="status-badge"><span class="badge-dot"></span>Grid status: normal</span>
@@ -35,8 +43,8 @@
         <p class="text-body on-dark" style="margin-top:6px;max-width:520px;">Circuit Saver is monitoring your connected transformer continuously. You'll see this panel change the moment a shift is requested.</p>
       </div>
       <div class="status-banner-meta">
-        <div class="status-banner-meta-item"><div class="metric-value metric-value--lg" id="stat-money-saved">$0</div><div class="text-label" style="color:var(--dark-text-dim);">Total savings <span class="data-tag data-tag--historical" style="margin-left:6px;">Historical</span></div></div>
-        <div class="status-banner-meta-item"><div class="metric-value metric-value--lg" id="stat-co2-saved">0<span class="metric-unit" style="color:var(--dark-text-dim)">lbs CO₂</span></div><div class="text-label" style="color:var(--dark-text-dim);">Emissions avoided</div></div>
+        <div class="status-banner-meta-item"><div class="metric-value metric-value--lg" id="stat-money-saved">$0</div><div class="text-label" style="color:var(--dark-text-dim);">Ledger-wide savings <span class="data-tag data-tag--historical" style="margin-left:6px;">Historical</span></div></div>
+        <div class="status-banner-meta-item"><div class="metric-value metric-value--lg" id="stat-co2-saved">0<span class="metric-unit" style="color:var(--dark-text-dim)">lbs CO₂</span></div><div class="text-label" style="color:var(--dark-text-dim);">Emissions avoided (ledger-wide)</div></div>
         <div class="status-banner-meta-item"><div class="metric-value metric-value--lg" id="stat-events">0</div><div class="text-label" style="color:var(--dark-text-dim);">Shed events recorded</div></div>
       </div>
     </section>
@@ -47,7 +55,7 @@
           <h2 class="text-h2">Your household</h2>
           <span class="tooltip-trigger" tabindex="0">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--ink-400)" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
-            <span class="tooltip-bubble">Priority score reflects your carbon and cost weighting plus how much flexible load you have available — it decides how much of a shed target you're asked to shift.</span>
+            <span class="tooltip-bubble">If Circuit Saver's Swarm Engine has allocated a real shed event to your account, it appears here. Otherwise this shows your saved savings estimate.</span>
           </span>
         </div>
         <div id="allocation-content">
@@ -65,6 +73,27 @@
         <button class="why-toggle" id="why-toggle" aria-expanded="false" aria-controls="why-detail">Why does shifting matter more than cutting?</button>
         <div class="why-detail" id="why-detail">
           A peaker plant is sized for the top 5% of demand hours in a year. If enough households shift load out of that narrow window, the plant is never needed — regardless of total annual consumption. Secondary savings also come from avoiding rebound-spike inefficiency and shifting consumption toward hours with a cleaner generation mix.
+        </div>
+      </div>
+    </div>
+
+    <div class="card card-pad" style="margin-top:var(--space-6);">
+      <div class="card-header">
+        <h2 class="text-h2">How Circuit Saver decides</h2>
+        <span class="data-tag data-tag--info">Technical depth</span>
+      </div>
+      <div class="grid grid-3">
+        <div>
+          <p class="text-h3" style="font-size:15px;margin-bottom:4px;">1. Predict</p>
+          <p class="text-body" style="font-size:13.5px;">A Random Forest Regressor estimates your transformer's normal ("baseline") load for the current hour and weather, so any shed request can be measured against a real reference point — not a guess.</p>
+        </div>
+        <div>
+          <p class="text-h3" style="font-size:15px;margin-bottom:4px;">2. Allocate</p>
+          <p class="text-body" style="font-size:13.5px;">The Swarm Engine — a deterministic optimizer, not a model — distributes a shed target across connected households by a transparent priority score: 40% carbon weighting, 40% cost weighting, 20% flexibility.</p>
+        </div>
+        <div>
+          <p class="text-h3" style="font-size:15px;margin-bottom:4px;">3. Protect</p>
+          <p class="text-body" style="font-size:13.5px;">An Anti-Rebound Classifier staggers everyone's restart time (0–45 min) so devices don't all switch back on simultaneously and cause a second spike. Transformer loading is the single strongest input to that decision.</p>
         </div>
       </div>
     </div>
@@ -91,6 +120,8 @@
   const verifiedEmail = await window.verifySession();
   if (!verifiedEmail) return;
 
+  document.getElementById("greeting").textContent = `Good to see you, ${verifiedEmail.split("@")[0]}.`;
+
   if (window.isAdminEmail(verifiedEmail)) {
     document.getElementById("header-right").insertAdjacentHTML(
       "afterbegin",
@@ -106,12 +137,24 @@
     e.target.setAttribute("aria-expanded", String(open));
   });
 
+  let householdProfile = null;
+  try {
+    const profileResp = await window.CSApi.getHouseholdProfile();
+    if (profileResp && profileResp.exists) {
+      householdProfile = profileResp.profile;
+    } else {
+      document.getElementById("onboarding-card").style.display = "block";
+    }
+  } catch (err) {
+    console.error("Could not load household profile:", err);
+  }
+
   const APPLIANCES = [
-    { id: "ac", label: "Air conditioning", kwh: 2.5, co2PerKwh: 0.85, costPerKwh: 0.15 },
-    { id: "water-heater", label: "Water heater", kwh: 1.8, co2PerKwh: 0.85, costPerKwh: 0.15 },
-    { id: "dryer", label: "Clothes dryer", kwh: 3.0, co2PerKwh: 0.85, costPerKwh: 0.15 },
-    { id: "dishwasher", label: "Dishwasher", kwh: 1.2, co2PerKwh: 0.85, costPerKwh: 0.15 },
-    { id: "ev-charger", label: "EV charger", kwh: 7.2, co2PerKwh: 0.85, costPerKwh: 0.15 },
+    { id: "ac", label: "Air conditioning", kwh: 2.5 },
+    { id: "water-heater", label: "Water heater", kwh: 1.8 },
+    { id: "dryer", label: "Clothes dryer", kwh: 3.0 },
+    { id: "dishwasher", label: "Dishwasher", kwh: 1.2 },
+    { id: "ev-charger", label: "EV charger", kwh: 7.2 },
   ];
 
   function renderApplianceChecklist() {
@@ -127,7 +170,6 @@
       cb.addEventListener("change", updateManualSummary);
     });
   }
-
   function updateManualSummary() {
     const checked = Array.from(document.querySelectorAll(".appliance-check:checked")).map((cb) => cb.value);
     const selected = APPLIANCES.filter((a) => checked.includes(a.id));
@@ -140,17 +182,11 @@
   }
   renderApplianceChecklist();
 
-  function renderAllocation(myRow) {
+  function renderAllocationFromLedger(myRow) {
     const el = document.getElementById("allocation-content");
-    if (!myRow) {
-      el.innerHTML = `
-        <div class="empty-state" style="padding:var(--space-6) 0;text-align:left;">
-          <p class="text-body" style="margin-bottom:0;">No allocation has been recorded for your account yet. When a shed event affects your connected transformer, your priority score and recommended shift will appear here.</p>
-        </div>`;
-      return;
-    }
     const priorityPct = window.CSFormat.priorityScore(myRow.priority_score);
     el.innerHTML = `
+      <span class="data-tag data-tag--live" style="margin-bottom:var(--space-3);display:inline-block;">Live allocation</span>
       <div class="allocation-hero">
         <div class="priority-ring-wrap">
           <svg width="120" height="120" viewBox="0 0 120 120">
@@ -163,14 +199,34 @@
         </div>
         <div class="allocation-detail">
           <p class="text-label">Your priority score</p>
-          <p class="text-body" style="margin-top:4px;">Reflects your household's carbon/cost priority weighting and available flexible capacity.</p>
           ${myRow.recommended_appliance ? `<div class="appliance-pill">Recommended: ${myRow.recommended_appliance}${myRow.was_capped ? ' <span class="badge badge-elevated" style="margin-left:6px;">Capped</span>' : ''}</div>` : ""}
           <div class="allocation-figures">
             <div><div class="metric-value">${window.CSFormat.kw(myRow.allocated_kw)}<span class="metric-unit">kW</span></div><div class="text-meta">Allocated</div></div>
-            <div><div class="metric-value">${window.CSFormat.kw(myRow.shiftable_capacity_kwh)}<span class="metric-unit">kWh</span></div><div class="text-meta">Shiftable capacity</div></div>
             <div><div class="metric-value">${window.CSFormat.currency(myRow.estimated_cost_saved_usd)}</div><div class="text-meta">Est. savings</div></div>
           </div>
         </div>
+      </div>`;
+  }
+
+  function renderAllocationFromProfile(profile) {
+    const el = document.getElementById("allocation-content");
+    el.innerHTML = `
+      <span class="data-tag data-tag--illustrative" style="margin-bottom:var(--space-3);display:inline-block;">Saved estimate — no live shed event yet</span>
+      <p class="text-label">${profile.address_text || "Your household"}</p>
+      <div class="allocation-figures" style="margin-top:var(--space-3);">
+        <div><div class="metric-value">${window.CSFormat.currencyRange(profile.estimated_annual_savings_low_usd, profile.estimated_annual_savings_high_usd)}</div><div class="text-meta">Est. annual savings</div></div>
+        <div><div class="metric-value">${window.CSFormat.kw(profile.estimated_avg_load_kw)}<span class="metric-unit">kW</span></div><div class="text-meta">Modeled avg. load</div></div>
+        <div><div class="metric-value">${window.CSFormat.co2(profile.estimated_co2_reduction_kg_per_year)}<span class="metric-unit">kg</span></div><div class="text-meta">Est. CO₂/year</div></div>
+      </div>
+      <p class="text-meta" style="margin-top:var(--space-4);">This is your saved Savings Estimator result, not a live shed event. It will be replaced by real allocation data the moment Circuit Saver sheds load on your connected transformer.</p>`;
+  }
+
+  function renderAllocationEmpty() {
+    const el = document.getElementById("allocation-content");
+    el.innerHTML = `
+      <div class="empty-state" style="padding:var(--space-6) 0;text-align:left;">
+        <p class="text-body" style="margin-bottom:var(--space-3);">No allocation or estimate on file yet.</p>
+        <a href="estimate.html" class="btn btn-secondary btn-sm">Estimate my savings</a>
       </div>`;
   }
 
@@ -182,14 +238,17 @@
     document.getElementById("stat-events").textContent = ledger.length;
 
     const myRow = ledger.find((r) => r.user_id === verifiedEmail || r.user_email === verifiedEmail);
-    renderAllocation(myRow);
-
-    const banner = document.getElementById("status-banner");
-    const badge = document.getElementById("status-badge");
-    if (myRow && myRow.was_capped === false) {
+    if (myRow) {
+      renderAllocationFromLedger(myRow);
+      const banner = document.getElementById("status-banner");
+      const badge = document.getElementById("status-badge");
       banner.classList.add("is-elevated");
       badge.className = "badge badge-elevated";
       badge.innerHTML = `<span class="badge-dot"></span>Peak event active`;
+    } else if (householdProfile) {
+      renderAllocationFromProfile(householdProfile);
+    } else {
+      renderAllocationEmpty();
     }
   }
 
@@ -199,13 +258,13 @@
       renderLedgerStats(Array.isArray(ledger) ? ledger : []);
     } catch (err) {
       console.error("Failed to load ledger stats:", err);
+      if (householdProfile) renderAllocationFromProfile(householdProfile);
+      else renderAllocationEmpty();
     }
   }
 
   const conn = window.createLiveConnection({
-    onMessage(data) {
-      loadLedgerStats();
-    },
+    onMessage(data) { loadLedgerStats(); },
     onStatusChange(status) {
       const strip = document.getElementById("conn-strip");
       const text = document.getElementById("conn-strip-text");
