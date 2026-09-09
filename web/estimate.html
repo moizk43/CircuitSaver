@@ -9,6 +9,27 @@
 <link href="https://fonts.googleapis.com/css2?family=Baloo+Tammudu+2:wght@600;700;800&family=Inter:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/style.css">
 <link rel="stylesheet" href="css/style-v2-patch.css">
+<style>
+  .address-wrap { position: relative; }
+  .address-suggestions {
+    position: absolute; top: calc(100% + 6px); left: 0; right: 0;
+    background: var(--surface-0); border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-md); box-shadow: var(--shadow-3);
+    max-height: 260px; overflow-y: auto; z-index: 30; display: none;
+  }
+  .address-suggestions.open { display: block; }
+  .address-suggestion {
+    padding: 12px 14px; font-size: 14px; cursor: pointer; border-bottom: 1px solid var(--border-subtle);
+    display: flex; align-items: center; gap: 10px;
+  }
+  .address-suggestion:last-child { border-bottom: none; }
+  .address-suggestion:hover, .address-suggestion.active { background: var(--brand-50); }
+  .address-suggestion svg { flex-shrink: 0; color: var(--ink-400); }
+  .location-pill {
+    display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: var(--radius-full);
+    background: var(--brand-50); color: var(--brand-700); font-size: 12px; font-weight: 700; margin-top: 8px;
+  }
+</style>
 </head>
 <body>
 
@@ -39,17 +60,24 @@
         <div style="text-align:center;margin-bottom:var(--space-8);">
           <span class="text-label" style="color:var(--brand-600);">Savings Estimator</span>
           <h1 class="text-h1" style="margin-top:8px;margin-bottom:12px;">Where do you live?</h1>
-          <p class="text-body-lg">We'll estimate what Circuit Saver's peak-shifting intelligence could mean for a household like yours.</p>
+          <p class="text-body-lg">Start typing your address — we'll geocode it and pull live local weather to personalize your estimate.</p>
         </div>
 
-        <form id="estimate-form" class="card card-pad" novalidate>
-          <div class="field">
-            <label for="address">Address or city/region</label>
-            <input id="address" type="text" placeholder="e.g. Austin, TX" autocomplete="off" autofocus>
-            <span class="hint">We use this only to match you to a modeled region — nothing is geocoded or stored unless you create an account.</span>
+        <form id="estimate-form" class="card card-pad" novalidate autocomplete="off">
+          <div class="field address-wrap">
+            <label for="address">Address, city, or region</label>
+            <input id="address" type="text" placeholder="Start typing an address…" autocomplete="off" autofocus>
+            <div class="address-suggestions" id="address-suggestions" role="listbox"></div>
+            <span class="hint">Used only to geocode your general location for this estimate — nothing is stored unless you create an account.</span>
             <span class="error-msg" id="address-error"></span>
+            <div id="selected-location-pill" style="display:none;">
+              <span class="location-pill">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                <span id="selected-location-text"></span>
+              </span>
+            </div>
           </div>
-          <button type="submit" class="btn btn-primary btn-lg btn-full" id="estimate-submit-btn">
+          <button type="submit" class="btn btn-primary btn-lg btn-full" id="estimate-submit-btn" style="margin-top:var(--space-4);">
             <span id="estimate-submit-text">Calculate my potential savings</span>
           </button>
         </form>
@@ -58,7 +86,7 @@
       <div id="estimator-loading-view" class="card card-pad" style="display:none;text-align:center;padding:var(--space-16) var(--space-6);">
         <div class="skeleton" style="width:64px;height:64px;border-radius:50%;margin:0 auto var(--space-6);"></div>
         <p class="text-h3" id="loading-line" style="margin-bottom:8px;">Analyzing local energy patterns…</p>
-        <p class="text-meta">Matching your location to Circuit Saver's validated grid models.</p>
+        <p class="text-meta">Geocoding your location and checking live weather conditions.</p>
       </div>
 
       <div id="estimator-results-view" style="display:none;">
@@ -66,7 +94,7 @@
           <span class="data-tag data-tag--illustrative" id="result-confidence-tag">Estimated</span>
           <h1 class="text-h1" style="margin-top:12px;margin-bottom:6px;">Your estimated impact</h1>
           <div class="metric-value metric-value--xl" id="result-headline" style="color:var(--brand-600);">$0–$0</div>
-          <p class="text-body">Estimated annual household savings</p>
+          <p class="text-body" id="result-place-text">Estimated annual household savings</p>
         </div>
 
         <div class="grid grid-3" style="margin-bottom:var(--space-6);">
@@ -90,7 +118,7 @@
             <div class="pipeline-step" style="padding:var(--space-4);">
               <div class="pipeline-step-icon" style="width:32px;height:32px;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12l9-9 9 9M5 10v10h14V10"/></svg></div>
               <p class="text-h3" style="font-size:14px;">Your household</p>
-              <p class="text-body" style="font-size:13px;">Modeled average load for your region</p>
+              <p class="text-body" style="font-size:13px;">Modeled average load for your location</p>
             </div>
             <div class="pipeline-step" style="padding:var(--space-4);">
               <div class="pipeline-step-icon" style="width:32px;height:32px;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2 3 14h7l-1 8 10-12h-7l1-8z"/></svg></div>
@@ -144,12 +172,81 @@
   const resultsView = document.getElementById("estimator-results-view");
   const form = document.getElementById("estimate-form");
   const addressInput = document.getElementById("address");
+  const suggestionsBox = document.getElementById("address-suggestions");
   const submitBtn = document.getElementById("estimate-submit-btn");
   const submitText = document.getElementById("estimate-submit-text");
+  const pillWrap = document.getElementById("selected-location-pill");
+  const pillText = document.getElementById("selected-location-text");
+
+  let debounceTimer = null;
+  let activeSuggestions = [];
+  let activeIndex = -1;
+
+  addressInput.addEventListener("input", () => {
+    pillWrap.style.display = "none";
+    const q = addressInput.value.trim();
+    clearTimeout(debounceTimer);
+    if (q.length < 3) { closeSuggestions(); return; }
+    debounceTimer = setTimeout(() => fetchSuggestions(q), 300);
+  });
+
+  async function fetchSuggestions(q) {
+    try {
+      const res = await fetch(`${window.API_BASE || "http://127.0.0.1:8000"}/estimate/autocomplete?q=${encodeURIComponent(q)}`);
+      const data = await res.json();
+      activeSuggestions = data.results || [];
+      renderSuggestions();
+    } catch (err) {
+      closeSuggestions();
+    }
+  }
+
+  function renderSuggestions() {
+    if (!activeSuggestions.length) { closeSuggestions(); return; }
+    activeIndex = -1;
+    suggestionsBox.innerHTML = activeSuggestions.map((s, i) => `
+      <div class="address-suggestion" data-index="${i}" role="option">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+        <span>${s.display_name}</span>
+      </div>`).join("");
+    suggestionsBox.classList.add("open");
+    suggestionsBox.querySelectorAll(".address-suggestion").forEach((el) => {
+      el.addEventListener("click", () => selectSuggestion(parseInt(el.dataset.index, 10)));
+    });
+  }
+
+  function closeSuggestions() {
+    suggestionsBox.classList.remove("open");
+    suggestionsBox.innerHTML = "";
+    activeSuggestions = [];
+  }
+
+  function selectSuggestion(i) {
+    const s = activeSuggestions[i];
+    if (!s) return;
+    addressInput.value = s.display_name;
+    pillText.textContent = "Location matched";
+    pillWrap.style.display = "block";
+    closeSuggestions();
+  }
+
+  addressInput.addEventListener("keydown", (e) => {
+    if (!activeSuggestions.length) return;
+    const items = suggestionsBox.querySelectorAll(".address-suggestion");
+    if (e.key === "ArrowDown") { e.preventDefault(); activeIndex = Math.min(activeIndex + 1, items.length - 1); }
+    else if (e.key === "ArrowUp") { e.preventDefault(); activeIndex = Math.max(activeIndex - 1, 0); }
+    else if (e.key === "Enter" && activeIndex >= 0) { e.preventDefault(); selectSuggestion(activeIndex); return; }
+    else return;
+    items.forEach((el, idx) => el.classList.toggle("active", idx === activeIndex));
+  });
+
+  document.addEventListener("click", (e) => {
+    if (!e.target.closest(".address-wrap")) closeSuggestions();
+  });
 
   const loadingLines = [
-    "Analyzing local energy patterns…",
-    "Matching your region to Circuit Saver's validated grid models…",
+    "Geocoding your address…",
+    "Checking live local weather…",
     "Estimating flexible household capacity…",
   ];
 
@@ -195,8 +292,12 @@
 
   function renderResults(result, address) {
     const tag = document.getElementById("result-confidence-tag");
-    tag.textContent = result.confidence === "region-matched" ? "Region-matched estimate" : "National-average estimate";
-    tag.className = "data-tag " + (result.confidence === "region-matched" ? "data-tag--live" : "data-tag--illustrative");
+    tag.textContent = result.confidence === "location-matched" ? "Location-matched estimate" : "National-average estimate";
+    tag.className = "data-tag " + (result.confidence === "location-matched" ? "data-tag--live" : "data-tag--illustrative");
+
+    document.getElementById("result-place-text").textContent = result.matched_place
+      ? `Estimated annual household savings for ${result.matched_place}`
+      : "Estimated annual household savings";
 
     document.getElementById("result-headline").textContent =
       window.CSFormat.currencyRange(result.estimated_annual_savings_low_usd, result.estimated_annual_savings_high_usd);
