@@ -6,9 +6,10 @@ from app.routers.auth_routes import router as auth_router
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.routers.manual_email_routes import router as manual_email_router
+from app.routers.profile import router as profile_router
+from app.routers.estimator import router as estimator_router
 
 app = FastAPI(title="CircuitSaver API")
-
 
 app.add_middleware(
     CORSMiddleware,
@@ -23,3 +24,5 @@ app.include_router(dashboard_ws.router)
 
 app.include_router(auth_router)
 app.include_router(manual_email_router)
+app.include_router(profile_router)
+app.include_router(estimator_router)
